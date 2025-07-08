@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 from job_post_scraper import JobPostScraper
 from file_handler import FileHandler
 import logging
+import json
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -19,6 +20,20 @@ class ResumeTailor:
         self.parsed_template = parsed_template
         self.f_handler = FileHandler()
         self.scraper = JobPostScraper()
+    def parse_work_experience(self, payload: str | dict) -> dict | None:
+        """
+        Attempts to ensure the input is a well-formed dict with expected structure
+
+        :param payload: The input, either a dict or JSON string
+        :return: Parsed and validated dict, or None if invalid
+        """
+        if not isinstance(payload, dict):
+            try:
+                payload = json.loads(payload)
+            except (json.JSONDecodeError, TypeError):
+                logger.error("Failed to convert tailored work experience payload to dict. Got: %s", type(payload).__name__)
+                return None
+        return payload
 
     def update_work_exp(self, updated_work_exp: dict) -> bool:
         """
@@ -26,12 +41,16 @@ class ResumeTailor:
 
         :param updated_work_exp: work experience that should be retrieved from LLM
         """ 
+        updated_work_exp = self.parse_work_experience(updated_work_exp)
+        if updated_work_exp is None:
+            return False
         old_work_exp = self.resume["data"]["work_experience"]
+        
         if len(old_work_exp) != len(updated_work_exp):
             logger.error("Failed to update work history", exc_info=True)
             return False
-        for old_exp, updated_exp in zip(old_work_exp, updated_work_exp):
-            if old_exp["title"] == updated_exp["title"]:
+        for old_exp, updated_exp in zip(old_work_exp.values(), updated_work_exp.values()):
+            if old_exp["title"] == updated_exp["title"]: # Error: it thinks old_exp is a string
                 old_exp["responsibilities"] = updated_exp["responsibilities"]
         return True
             
@@ -117,9 +136,17 @@ class ResumeTailor:
             section.append(ul)
 
     def write_resume_to_html(self, file_name: str = "output.html"):
+        """
+        Converts BeautifulSoup object into an html file
+
+        :param file_name: name of html file
+        """ 
         self.f_handler.write_to_html(self.parsed_template, file_name) # TODO file name needs to be changed    
 
-    def generate_tailored_resume(self):
+    async def generate_tailored_resume(self, url: str):
+        scraping = await self.scraper.scrape_job_posting(url)
+        tailored = await self.get_tailored_work_exp(self.scraper.job_description)
+        self.update_work_exp(tailored)
         self.populate_resume()
         self.write_resume_to_html()
 

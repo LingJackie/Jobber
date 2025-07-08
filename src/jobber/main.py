@@ -13,7 +13,7 @@ async def main():
     resume_template = f_handler.load_resume_template("default_resume_template.html")
     
     rw = ResumeTailor(jackie_resume, resume_template)
-    rw.generate_tailored_resume()
+    stuff = await rw.generate_tailored_resume("https://job-boards.greenhouse.io/greenhouse/jobs/6605179?gh_jid=6605179")
 
     # job_scraper = JobPostScraper()
     # stuff = await job_scraper.scrape_job_posting("https://job-boards.greenhouse.io/greenhouse/jobs/6605179?gh_jid=6605179")
