@@ -1,0 +1,91 @@
+{
+    "data": {
+        "technical_keywords": {
+            "languages": [
+                "HTML", "CSS", "JavaScript", "Typescript", "SQL", "Java", "C#", "Python"
+            ],
+            "frameworks_libraries": [
+                "Angular", "React Native", "React", ".Net", "Django", "Node.js", "NodeJS", "Spring", "Spring Boot"
+            ],
+            "databases": ["MySQL","MongoDB", "PostgreSQL"],
+            "tools_softwares": [
+                "Git", "AWS", "Visual Studio", "Jira", "Postman", "Unity", "Microscoft Suite", "Adobe Suite"
+            ],
+            "others": [ 
+                "REST", "RESTful","Web Services", 
+                "Object-Oriented Design", "Object-Oriented Programming","Object Oriented Design", "Object Oriented Programming", "OOD", "OOP", 
+                "relational databases", "web applications", "user interface",
+                "UI", "site layout", "cross-browser compatibility", "SEO", "security principles",
+                "secure coding", "testable code", "scalable code", "efficient code", "problem diagnosis",
+                "creative problem solving", "Web Services integration", "database development",
+                "web standards", "frameworks", "programming languages"
+            ]
+        },
+        "work_experience": {
+            "experience_1":{
+                "title": "Junior Software Engineer",
+                "company": "Genspark",
+                "start": "Apr 2022",
+                "end": "Jan 2023",
+                "location": "Middletown, NJ",
+                "responsibilities": [
+                "Built web apps for a Large Telecomunications client",
+                "Worked with people across time zones, using tools like MS Teams, Bitbucket, and Jira",
+                "Used Bitbucket to manage code version control",
+                "Tech stack was Angular and Node.js for some projects and React and Springboot for others",
+                "Style the front end with Angular",
+                "Worked on RESTful APIs in the backend with Node.js",
+                "Wrote SQL queries to grab data from relational databases",
+                "Used npm to manage dependencies",
+                "Worked with senior developers to troubleshoot technical issues",
+                "Wrote automated unit and integration tests",
+                "Optimized dashboard table components performances, improving load times by an estimated 15%",
+                "Worked in an Agile team that tracked project tasks and bugs using Jira",
+                "Worked on a job tracking webapp for client's service technicians",
+                "Worked on a employee management webapp. The dashboard tracked the technicians",
+                "Wrote and improved internal documentation including onboading docs, reducing onboarding time by approximately 20%"
+                ]
+            },
+            "experience_2":{
+                "title": "Software Engineer Intern",
+                "company": "Spotlist Inc.",
+                "start": "Sept 2021",
+                "end": "Dec 2021",
+                "location": "Remote, NY",
+                "responsibilities": [
+                "Worked on an app for scheduling appointments with Barbers, Hairstylists, Cosmetologists, and etc",
+                "Tech stack was React Native, Django, and PostgreSQL",
+                "Worked in an Agile team where I participated in sprint planning and daily stand-ups on the Trello scrum board",
+                "The app was hosted on AWS which gave me exposure to EC2 and S3",
+                "I worked with AWS S3 buckets to store profile pics",
+                "I worked with Stripe API to add secure payment processing",
+                "Used Git version control to manage codebase changes and maintain a clean and organized repository",
+                "Used Postman to design, test, and document RESTful API endpoints",
+                "Wrote SQL queries to grab data from relational databases",
+                "Helped with writing documentation",
+                "Attended weekly meeetings with developers and non technical stakeholders to discuss progress"
+                ]
+            }
+            
+        },
+        "education": {
+            "school_1":{
+                "name": "University at Buffalo",
+                "degree": "Bachelor of Science",
+                "major": "Computer Science",
+                "end": "May 2020",
+                "location": "Buffalo, NY"
+            }
+        },
+        "contact_info":{
+            "address": "Staten Island, NY 10304",
+            "phone_number": "6468811221",
+            "email": "jackie.ling.jobs@gmail.com",
+            "linkedin": "https://www.linkedin.com/in/jackie-ling/",
+            "github": "http://www.github.com/LingJackie"
+        }
+
+        
+    }
+}
+

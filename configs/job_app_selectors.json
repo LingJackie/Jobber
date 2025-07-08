@@ -1,0 +1,38 @@
+{
+    "myworkdayjobs.com": {
+      "job_title": ["h2[data-automation-id='jobPostingHeader']"],
+      "job_loc":   ["div[data-automation-id='locations']"],
+      "job_desc":  ["div[data-automation-id='jobPostingDescription']"]
+    },
+    "oraclecloud.com": {
+      "job_title": [""],
+      "job_loc":   [""],
+      "job_desc":  [""]
+    },
+    "smartrecruiters.com": {
+      "job_title": [""],
+      "job_loc":   [""],
+      "job_desc":  [""]
+    },
+    "adp.com": {
+      "job_title": ["h2.job-description-title", "h1.hero-heading"],
+      "job_loc":   [""],
+      "job_desc":  [""]
+    },
+    "greenhouse.io": {
+      "job_title": ["div.job__title"],
+      "job_loc":   ["div.job__location"],
+      "job_desc":  ["div[class*='job'][class*='description']"]
+    },
+    "default": {
+      "job_title": [
+        "h1.job-title",
+        "div.job__title",
+        "h1.title",
+        "h2",
+        "h1"
+      ],
+      "job_loc":   ["div.job-location"],
+      "job_desc":  ["div.job-description"]
+    }
+}
