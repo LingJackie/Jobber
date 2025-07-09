@@ -1,11 +1,14 @@
 import asyncio
 import re
-from playwright.async_api import async_playwright
+import logging
+from playwright.async_api import async_playwright, TimeoutError as PlaywrightTimeoutError
+
 from timing import log
 from file_handler import FileHandler
 
 
 # api_key = os.getenv("GEMINI_API_KEY")
+logger = logging.getLogger(__name__)
 
 
 patterns = [
@@ -64,43 +67,53 @@ class JobPostScraper:
             if match:
                 return match.group(1).strip()
         return "n/a"
-
-
-    async def scrape_job_posting(self, url: str):
-        """
-        Scrapes a job posting and updates memeber vaiables with that data
-
-        :param url: job post url
-        """ 
-        async with async_playwright() as p:
+    
+    async def scrape_job_posting(self, url: str, max_retries: int = 3, delay: float = 2.0) -> bool:
+        for attempt in range(1, max_retries + 1):
+            browser = None
             try:
-                browser = await p.chromium.launch(headless=True)
-                page = await browser.new_page()
-                await page.goto(url, timeout=10000)
+                async with async_playwright() as p:
+                    browser = await p.chromium.launch(headless=True)
+                    page = await browser.new_page()
+                    await page.goto(url, timeout=10000)
 
-                domain_selector_list = self.job_app_selector_dict[self.get_domain_key(url)]
+                    selector_list = self.job_app_selector_dict.get(self.get_domain_key(url))
 
-                job_title_task = self.extract_job_data(page, domain_selector_list["job_title"])
-                location_task  = self.extract_job_data(page, domain_selector_list["job_loc"])
-                desc_task      = self.extract_job_data(page, domain_selector_list["job_desc"])
-                
+                    if not selector_list:
+                        logger.error(f"No selector list found")
+                        return False
 
-                job_title, job_location, job_description = await asyncio.gather(
-                    job_title_task, location_task, desc_task
-                )
-               
+                    job_title_task = self.extract_job_data(page, selector_list["job_title"])
+                    location_task  = self.extract_job_data(page, selector_list["job_loc"])
+                    desc_task      = self.extract_job_data(page, selector_list["job_desc"])
 
-                self.job_title = job_title
-                self.job_location = job_location
-                self.job_description = job_description
-                self.company_name = self.extract_company_name(self.job_description)
+                    job_title, job_location, job_description = await asyncio.gather(
+                        job_title_task, location_task, desc_task
+                    )
+
+                    self.job_title = job_title
+                    self.job_location = job_location
+                    self.job_description = job_description
+                    self.company_name = self.extract_company_name(self.job_description)
+
+                    return True
+
+            except PlaywrightTimeoutError:
+                logger.warning(f"Timeout while navigating to {url} on attempt {attempt}")
             except Exception as e:
-                print(e)
+                logger.exception(f"Unexpected error while scraping {url} on attempt {attempt}: {e}")
             finally:
-                await browser.close()
+                if browser:
+                    try:
+                        await browser.close()
+                    except Exception:
+                        logger.warning("Failed to close browser cleanly")
 
-    
-    
+            await asyncio.sleep(delay)
+
+        logger.error(f"All attempts to scrape job posting at {url} have failed")
+        return False
+
 
 
 

@@ -78,7 +78,6 @@
             text-decoration: none;
             color: black;
         }
-
         .address, .phone {
             text-align: left;
             width: 33%;
@@ -87,10 +86,15 @@
             text-align: center;
             width: 33%;
         }
-
         .link {
             text-align: right;
             width: 33%;
+        }
+        #projects {
+            display: none;
+        }
+        #tmp{
+            display: none;
         }
         
     </style>
@@ -111,7 +115,7 @@
 </tbody></table>
 <section id="work-experience">
 <h2>Relevant Experience</h2>
-<table class="experience">
+<table class="experience" id="tmp">
 <tbody>
 <tr>
 <td class="title">Junior Software Developer</td>
@@ -123,24 +127,12 @@
 </tr>
 </tbody>
 </table>
-<ul>
+<ul id="tmp">
 <li>
 </li>
 </ul>
-<table class="experience">
-<tbody><tr>
-<td class="title">Software Engineer Intern</td>
-<td class="date">Sept 2021 - Dec 2021</td>
-</tr>
-<tr>
-<td class="company">Spotlist Inc</td>
-<td class="location">Remote, NY</td>
-</tr>
-</tbody></table>
-<ul>
-</ul>
-<table class="experience"><tbody><tr><td class="title">Junior Software Engineer</td><td class="date">Apr 2022 – Jan 2023</td></tr><tr><td class="company">Genspark</td><td class="location">Middletown, NJ</td></tr></tbody></table><ul class="bullets"><li>Built web apps for a Large Telecomunications client</li><li>Worked with people across time zones, using tools like MS Teams, Bitbucket, and Jira</li><li>Used Bitbucket to manage code version control</li><li>Tech stack was Angular and Node.js for some projects and React and Springboot for others</li><li>Style the front end with Angular</li><li>Worked on RESTful APIs in the backend with Node.js</li><li>Wrote SQL queries to grab data from relational databases</li><li>Used npm to manage dependencies</li><li>Worked with senior developers to troubleshoot technical issues</li><li>Wrote automated unit and integration tests</li><li>Optimized dashboard table components performances, improving load times by an estimated 15%</li><li>Worked in an Agile team that tracked project tasks and bugs using Jira</li><li>Worked on a job tracking webapp for client's service technicians</li><li>Worked on a employee management webapp. The dashboard tracked the technicians</li><li>Wrote and improved internal documentation including onboading docs, reducing onboarding time by approximately 20%</li></ul><table class="experience"><tbody><tr><td class="title">Software Engineer Intern</td><td class="date">Sept 2021 – Dec 2021</td></tr><tr><td class="company">Spotlist Inc.</td><td class="location">Remote, NY</td></tr></tbody></table><ul class="bullets"><li>Worked on an app for scheduling appointments with Barbers, Hairstylists, Cosmetologists, and etc</li><li>Tech stack was React Native, Django, and PostgreSQL</li><li>Worked in an Agile team where I participated in sprint planning and daily stand-ups on the Trello scrum board</li><li>The app was hosted on AWS which gave me exposure to EC2 and S3</li><li>I worked with AWS S3 buckets to store profile pics</li><li>I worked with Stripe API to add secure payment processing</li><li>Used Git version control to manage codebase changes and maintain a clean and organized repository</li><li>Used Postman to design, test, and document RESTful API endpoints</li><li>Wrote SQL queries to grab data from relational databases</li><li>Helped with writing documentation</li><li>Attended weekly meeetings with developers and non technical stakeholders to discuss progress</li></ul></section>
-<section>
+<table class="experience"><tbody><tr><td class="title">Junior Software Engineer</td><td class="date">Apr 2022 – Jan 2023</td></tr><tr><td class="company">Genspark</td><td class="location">Middletown, NJ</td></tr></tbody></table><ul class="bullets"><li>Streamlined software development processes, collaborating across time zones using Agile methodologies and tools such as Jira for defect tracking and Bitbucket for version control</li><li>Developed and implemented comprehensive automated test suites, including unit, integration, and end-to-end tests using Jest and Selenium</li><li>Enhanced application performance and user experience by optimizing dashboard components, resulting in a 15% reduction in load times</li><li>Developed robust backend RESTful APIs and web applications using Node.js and Springboot, contributing to scalable internal tools</li><li>Contributed to a structured knowledge base by writing and improving internal documentation, streamlining onboarding processes and reducing time by 20%</li></ul><table class="experience"><tbody><tr><td class="title">Software Engineer Intern</td><td class="date">Sept 2021 – Dec 2021</td></tr><tr><td class="company">Spotlist Inc.</td><td class="location">Remote, NY</td></tr></tbody></table><ul class="bullets"><li>Practiced modern Agile methodologies and utilized Git for version control, participating in sprint planning and daily stand-ups to manage codebase changes</li><li>Contributed to software quality by writing automated unit tests using pytest and employing Postman for API design and testing</li><li>Gained hands-on experience with cloud platforms, deploying applications on AWS and managing data with services like EC2 and S3</li><li>Developed backend functionalities using Django, contributing to the creation of robust web applications</li><li>Assisted in creating and maintaining project documentation, contributing to a valuable knowledge base</li></ul></section>
+<section id="education">
 <h2>Education</h2>
 <table class="education-details">
 <tbody><tr>
@@ -153,7 +145,7 @@
 </tr>
 </tbody></table>
 </section>
-<section>
+<section id="technical_skills">
 <h2>Technical Skills</h2>
 <table>
 <tbody><tr>
@@ -174,7 +166,7 @@
 </tr>
 </tbody></table>
 </section>
-<section>
+<section id="projects">
 <h2>Projects</h2>
 <table class="project-details">
 <tbody><tr>

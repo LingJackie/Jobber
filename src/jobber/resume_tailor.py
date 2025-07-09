@@ -1,9 +1,12 @@
+import logging
+import json
+import asyncio
 from google import genai
 from bs4 import BeautifulSoup
 from job_post_scraper import JobPostScraper
 from file_handler import FileHandler
-import logging
-import json
+from httpx import TimeoutException, RequestError
+
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -50,19 +53,19 @@ class ResumeTailor:
             logger.error("Failed to update work history", exc_info=True)
             return False
         for old_exp, updated_exp in zip(old_work_exp.values(), updated_work_exp.values()):
-            if old_exp["title"] == updated_exp["title"]: # Error: it thinks old_exp is a string
+            if old_exp["title"] == updated_exp["title"]: 
                 old_exp["responsibilities"] = updated_exp["responsibilities"]
         return True
             
-    # TODO needs better error handling
-    async def get_tailored_work_exp(self, job_desc: str):
+    async def get_tailored_work_exp(self, job_desc: str, max_retries: int = 3, delay: float = 2.0) -> dict | None:
         """
         Makes LLM tailor resume job descriptions based on the job posting
 
         :param job_desc: job description from job posting
-        :return: LLM response which should be in json format
+        :return: LLM response which should be in json format converted to dict
         """ 
-        # only need the job title and descriptions from resume 
+
+        # only grabs work responsibilities from resume dict
         extracted_exp = {
             key: {
                 "title": value["title"],
@@ -70,23 +73,43 @@ class ResumeTailor:
             }
             for key, value in self.resume["data"]["work_experience"].items()
         }
-        
-        client = genai.Client() # The client gets the API key from the environment variable `GEMINI_API_KEY`
-        try:
-            response = client.models.generate_content(
-                model="gemini-2.5-flash", contents="You are a resume optimization assistant. I will give you a json containing my job title and a list of my job responsibilities along with a job posting description. " 
-                                                    "Your job is to rewrite and select 5 bullet points per role that are most relevant to the job description. " 
-                                                    "You are allowed to combine bullets as well. Format the rewrite in pure json, the same way as my job responsiblities. " 
-                                                    "Do not include any markdown or explanations. Use double quotes"
-                                                    "No periods. Here is my experience and the job app:" + str(extracted_exp) + job_desc
-            )
-            return response.text
-        except:
-            print("Unable to make request")
-            return {
-                "n/a": []
-            }
-        
+
+        prompt = (
+            "You are a resume optimization assistant. I will give you a json containing my job title and a list of my job "
+            "responsibilities along with a job posting description. Your job is to rewrite and select 5 bullet points per role "
+            "that are most relevant to the job description. You are allowed to combine bullets as well. Format the rewrite in pure json, "
+            "the same way as my job responsibilities. Do not include any markdown or explanations. Use double quotes. No periods. "
+            "Here is my experience and the job app:\n" + json.dumps(extracted_exp) + "\n" + job_desc
+        )
+
+        client = genai.Client()
+
+        for attempt in range(1, max_retries + 1):
+            try:
+                response = client.models.generate_content(
+                    model="gemini-2.5-flash",
+                    contents=prompt
+                )
+                logger.info(f"LLM tailoring succeeded on attempt {attempt}")
+                return json.loads(response.text)
+            except TimeoutException:
+                logger.warning(f"Timeout on attempt {attempt}, retrying in {delay} seconds...")
+            except RequestError as req_err:
+                logger.error(f"Request failed: {req_err}")
+                break
+            except (json.JSONDecodeError, TypeError):
+                logger.error("Failed to convert tailored work experience response to dict")
+                break
+            except Exception as e:
+                logger.exception("Unexpected error occurred while tailoring resume")
+                break
+
+            await asyncio.sleep(delay)
+
+        logger.error("All attempts to tailor resume failed")
+        return None
+
+    
     def populate_resume(self):
         """
         Adds data from self.resume into a soup
@@ -144,7 +167,7 @@ class ResumeTailor:
         self.f_handler.write_to_html(self.parsed_template, file_name) # TODO file name needs to be changed    
 
     async def generate_tailored_resume(self, url: str):
-        scraping = await self.scraper.scrape_job_posting(url)
+        job_post_scraping = await self.scraper.scrape_job_posting(url)
         tailored = await self.get_tailored_work_exp(self.scraper.job_description)
         self.update_work_exp(tailored)
         self.populate_resume()

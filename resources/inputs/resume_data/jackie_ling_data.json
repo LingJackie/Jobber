@@ -38,7 +38,8 @@
                 "Wrote SQL queries to grab data from relational databases",
                 "Used npm to manage dependencies",
                 "Worked with senior developers to troubleshoot technical issues",
-                "Wrote automated unit and integration tests",
+                "Wrote automated unit and integration tests using Jest",
+                "Used Selenium for end to end testing",
                 "Optimized dashboard table components performances, improving load times by an estimated 15%",
                 "Worked in an Agile team that tracked project tasks and bugs using Jira",
                 "Worked on a job tracking webapp for client's service technicians",
@@ -53,7 +54,7 @@
                 "end": "Dec 2021",
                 "location": "Remote, NY",
                 "responsibilities": [
-                "Worked on an app for scheduling appointments with Barbers, Hairstylists, Cosmetologists, and etc",
+                "Worked on an mobile app for scheduling appointments with Barbers, Hairstylists, Cosmetologists, and etc",
                 "Tech stack was React Native, Django, and PostgreSQL",
                 "Worked in an Agile team where I participated in sprint planning and daily stand-ups on the Trello scrum board",
                 "The app was hosted on AWS which gave me exposure to EC2 and S3",
@@ -63,7 +64,8 @@
                 "Used Postman to design, test, and document RESTful API endpoints",
                 "Wrote SQL queries to grab data from relational databases",
                 "Helped with writing documentation",
-                "Attended weekly meeetings with developers and non technical stakeholders to discuss progress"
+                "Attended weekly meeetings with developers and non technical stakeholders to discuss progress",
+                "Wrote automated unit tests with pytest"
                 ]
             }
             
