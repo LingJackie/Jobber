@@ -134,7 +134,7 @@ class ResumeTailor:
             title = self.parsed_template.new_tag("td", **{"class": "title"})
             title.string = exp["title"]
             date = self.parsed_template.new_tag("td", **{"class": "date"})
-            date.string = f"{exp['start']} – {exp['end']}"
+            date.string = f"{exp['start']} - {exp['end']}"
             tr_left.append(title)
             tr_left.append(date)
 
@@ -158,15 +158,23 @@ class ResumeTailor:
             table.append(tbody)
             section.append(ul)
 
-    def write_resume_to_html(self, file_name: str = "output.html"):
+    def write_resume_to_html(self, file_name: str = "resume_wip.html"):
         """
         Converts BeautifulSoup object into an html file
 
         :param file_name: name of html file
         """ 
-        self.f_handler.write_to_html(self.parsed_template, file_name) # TODO file name needs to be changed    
+        self.f_handler.save_html(self.parsed_template, file_name) # TODO file name needs to be changed    
 
     async def generate_tailored_resume(self, url: str):
+        """
+        Pipeline:
+            1. Scrape job posting
+            2. Prompt LLM with job description + your own work experience
+            3. Parse LLM response
+            4. Insert LLM response into template and save as new html resume
+            5. Convert html resume to pdf
+        """ 
         job_post_scraping = await self.scraper.scrape_job_posting(url)
         tailored = await self.get_tailored_work_exp(self.scraper.job_description)
         self.update_work_exp(tailored)

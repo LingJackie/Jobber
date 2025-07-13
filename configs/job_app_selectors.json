@@ -27,10 +27,12 @@
     "default": {
       "job_title": [
         "h1.job-title",
-        "div.job__title",
         "h1.title",
         "h1.hero-heading",
-        "h1 span[data-careersite-propertyid='title']"
+        "h1[class*='Title']",
+        "h1 span[data-careersite-propertyid='title']",
+        "div.job__title"
+
       ],
       "job_loc":   [
         "div.job-location",

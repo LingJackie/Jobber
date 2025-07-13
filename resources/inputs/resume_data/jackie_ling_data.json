@@ -1,6 +1,6 @@
 {
     "data": {
-        "technical_keywords": {
+        "skills": {
             "languages": [
                 "HTML", "CSS", "JavaScript", "Typescript", "SQL", "Java", "C#", "Python"
             ],
@@ -22,7 +22,20 @@
             ]
         },
         "work_experience": {
-            "experience_1":{
+            "experience_3":{
+                "title": "Freelance AI Data Contributor",
+                "company": "Various Short-Term Contracts",
+                "start": "Mar 2023",
+                "end": "Present",
+                "location": "New York, NY",
+                "responsibilities": [
+                "Worked on multiple projects where I provided various training data to ai",    
+                "Participated in voice collection projects to train ai on whispers",
+                "Participated in motion data recording projects to train ai video generation",
+                "Edited and evaluated AI-generated photos using Photoshop to ensure quality and consistency to train and improve AI-generated visuals"
+                ]
+            },
+            "experience_2":{
                 "title": "Junior Software Engineer",
                 "company": "Genspark",
                 "start": "Apr 2022",
@@ -35,6 +48,7 @@
                 "Tech stack was Angular and Node.js for some projects and React and Springboot for others",
                 "Style the front end with Angular",
                 "Worked on RESTful APIs in the backend with Node.js",
+                "Used HTML, CSS, to style web app",
                 "Wrote SQL queries to grab data from relational databases",
                 "Used npm to manage dependencies",
                 "Worked with senior developers to troubleshoot technical issues",
@@ -47,7 +61,7 @@
                 "Wrote and improved internal documentation including onboading docs, reducing onboarding time by approximately 20%"
                 ]
             },
-            "experience_2":{
+            "experience_1":{
                 "title": "Software Engineer Intern",
                 "company": "Spotlist Inc.",
                 "start": "Sept 2021",
@@ -55,14 +69,14 @@
                 "location": "Remote, NY",
                 "responsibilities": [
                 "Worked on an mobile app for scheduling appointments with Barbers, Hairstylists, Cosmetologists, and etc",
-                "Tech stack was React Native, Django, and PostgreSQL",
+                "Tech stack for the app was React Native, Django, and PostgreSQL",
                 "Worked in an Agile team where I participated in sprint planning and daily stand-ups on the Trello scrum board",
                 "The app was hosted on AWS which gave me exposure to EC2 and S3",
-                "I worked with AWS S3 buckets to store profile pics",
-                "I worked with Stripe API to add secure payment processing",
+                "Worked on backend api to uplaod and store profile pics to AWS S3 buckets",
+                "Helped incorporate Stripe API to add secure payment processing",
                 "Used Git version control to manage codebase changes and maintain a clean and organized repository",
                 "Used Postman to design, test, and document RESTful API endpoints",
-                "Wrote SQL queries to grab data from relational databases",
+                "Used Django ORM to retreive data from relational databases",
                 "Helped with writing documentation",
                 "Attended weekly meeetings with developers and non technical stakeholders to discuss progress",
                 "Wrote automated unit tests with pytest"
@@ -80,13 +94,22 @@
             }
         },
         "contact_info":{
+            "name": "Jackie Ling",
             "address": "Staten Island, NY 10304",
             "phone_number": "6468811221",
             "email": "jackie.ling.jobs@gmail.com",
             "linkedin": "https://www.linkedin.com/in/jackie-ling/",
             "github": "http://www.github.com/LingJackie"
+        },
+        "projects":{
+            "project1":{
+                "name": "Video Game Modding",
+                "details": [
+                    "Designed custom textures for video game mods using Photoshop, applying creative edits that matched in-game aesthetics and technical constraints"
+                ]
+            }
         }
-
+        
         
     }
 }

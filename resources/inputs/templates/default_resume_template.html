@@ -1,6 +1,7 @@
 <!DOCTYPE html>
-<html lang="en"><head>
-<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<html lang="en">
+    <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Jackie Ling Resume</title>
@@ -9,40 +10,54 @@
         Increase HTML font size by 25% to compensate    
     -->
     <style>
-        @page {
-            size: letter;
+        html {
+            display: flex;
+            justify-content: center;
+            margin: 0;
+            padding: 0;
         }
         body {
-            font-family: helvetica, sans-serif;
-            margin: 40px auto;
-            max-width: 800px;
-            max-height: 1000px;
-            line-height: 1.5;
-            font-size: 18px;
+            font-family: Helvetica, sans-serif;
+            /* padding: 2in; margins */
+            max-width: 8.5in;
+            /* max-height: 1056px; */
+            line-height: 1.2;
+            font-size: 12pt;
             color: #333;
+            /* padding-left: .75in;
+            padding-right: .75in; */
+            padding: .75in;
+            margin: 0;
+            border: 1px dashed red;
         }
         h1 {
-            text-align: center;
+            /* text-align: center; */
             color: #2c3e50;
+            margin-top: 0px;
             margin-bottom: 0px;
             padding-bottom: 0;
-            
+            font-size: 50px;
+            line-height: 20px;
+            /* border: 1px dashed green; */
         }
-        h2 {
+        h3 {
             text-align: left;
             color: #2c3e50;
             text-transform: uppercase;
+          
+            line-height: 18px;
+            
+            
+            border-bottom: 2px solid #2c3e50;
+            margin-bottom: 2px; /* Remove any default top margin */
+            padding-bottom: 0; /* Ensure no extra padding */
         }
      
         section {
             margin-bottom: 10px;
             padding-bottom: 0;
         }
-        h2 {
-            border-bottom: 2px solid #2c3e50;
-            margin-bottom: 5px; /* Remove any default top margin */
-            padding-bottom: 0; /* Ensure no extra padding */
-        }
+   
         .title {
             font-weight: bold;
             color: #34495e;
@@ -62,49 +77,60 @@
         .company {
             text-align: left;
         } 
-        .title, .project-title, .university{
+        .title, .project-title, .university {
             text-align: left;
             font-weight: bold;
         }
-        .date, .location{
+        .date, .location {
             text-align: right;
-            font-style: italic;
+            /* font-style: italic; */
         }
-        .skills{
+        .skills {
             width: 30%;
+            break-before: page;
+
         }
         a { /* Gets rid of the blue and underline from links */
             text-decoration: none;
             color: black;
         }
-        .address, .phone {
-            text-align: left;
-            width: 33%;
-        }
-        .email {
-            text-align: center;
-            width: 33%;
-        }
-        .link {
-            text-align: right;
-            width: 33%;
-        }
         #projects {
             display: none;
         }
-        #tmp{
-            display: none;
+        .header-1 {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        
+        }
+        .full-name h1 {
+            font-size: 60px;
+            margin: 0;
+            line-height: 1.1;
+            color: #2c3e50;
+        }
+
+        .contact-info {
+            font-size: 12pt;
+            text-align: right;
+            line-height: 1.5;
+            max-width: 40%;
+        }
+        .contact-info p {
+            margin: 0;
+            padding: 0px;
+            line-height: 16px;  
         }
         
     </style>
 </head>
 <body>
-    <h1>Jackie Ling</h1>
     
-    <table class="contacts">
+    
+    <!-- <table class="contacts">
         <tbody><tr>
-            <td class="address">Staten Island, NY</td>
             <td class="email"><a href="mailto:jackie.ling.jobs@gmail.com">jackie.ling.jobs@gmail.com</a></td>
+            <td class="address">Staten Island, NY 10304</td>
             <td class="link"><a href="http://www.github.com/LingJackie">github.com/LingJackie</a>  </td>     
         </tr>
         <tr>
@@ -112,46 +138,57 @@
             <td></td>
             <td class="link"><a href="https://www.linkedin.com/in/jackie-ling/">linkedin.com/in/jackie-ling</a> </td>
         </tr>
-    </tbody></table>
-
-
+    </tbody></table> -->
+    <div class="header-1">
+        <div class="full-name">
+          <h1>Jackie Ling</h1>
+        </div>
+        <div class="contact-info">
+          <p><a href="mailto:jackie.ling.jobs@gmail.com">jackie.ling.jobs@gmail.com</a></p>
+          <p>(646)-881-1221</p>
+          <p><a href="https://maps.app.goo.gl/2tNsZprJSy5F1w8U6">Staten Island, NY 10304</a></p>
+          <p><a href="https://www.linkedin.com/in/jackie-ling/">linkedin.com/in/jackie-ling</a></p>
+          <p><a href="http://www.github.com/LingJackie">github.com/LingJackie</a></p>
+        </div>
+    </div>
     <section id="work-experience">
-        <h2>Relevant Experience</h2>
-        <table id = "tmp" class="experience">
+        <h3>Experience</h3>
+        <table class="experience">
             <tbody>
                 <tr>
-                    <td class="title">Junior Software Developer</td>
-                    <td class="date">Apr 2022 - Jan 2023</td>
+                    <td class="title">Cashier</td>
+                    <td class="date">Mar 2023 - Present</td>
                 </tr>
                 <tr>
-                    <td class="company">Genspark</td>
-                    <td class="location">Middletown, NJ</td>
+                    <td class="company">Great China Chinese Restaurant</td>
+                    <td class="location">Amityville, NY</td>
                 </tr>
             </tbody>
         </table>
-        <ul id = "tmp">
-            <li>
-                
-            </li>
+        <ul>
+            <li>Provided efficient customer service, ensuring a positive dining experience for all guests</li>
+            <li>Coordinated with kitchen staff to ensure smooth and timely order fulfillment</li>
+            <li>Organized inventory, identifying supply shortages and proactively communicating them to management</li>
+            <li>Managed customer inquiries and resolved issues and complaints</li>
         </ul>
     </section>
 
     <section id = "education">
-        <h2>Education</h2>
+        <h3>Education</h3>
         <table class="education-details">
             <tbody><tr>
                 <td class="university">University at Buffalo</td>
-                <td class="date">May 2020</td>
+                <td class="location">Buffalo, NY</td>
             </tr>
             <tr>
                 <td class="degree">Bachelor of Science - Computer Science</td>
-                <td class="location">Buffalo, NY</td>
+                <td class="date">May 2020</td>
             </tr>
         </tbody></table>
     </section>
 
     <section id = "technical_skills">
-        <h2>Technical Skills</h2>
+        <h3>Technical Skills</h3>
         <table>
             <tbody><tr>
                 <td class="skills"><strong>Languages:</strong> </td>
@@ -162,10 +199,6 @@
                 <td>React Native, Angular, Spring, Django, Node.js, .NET</td>
             </tr>
             <tr>
-                <td class="skills"><strong>Databases:</strong> </td>
-                <td>PostgreSQL, MongoDB</td>
-            </tr>
-            <tr>
                 <td class="skills"><strong>Tools:</strong> </td>
                 <td>Git, AWS, Visual Studio, Jira, Maven, Postman</td>
             </tr>
@@ -173,7 +206,7 @@
     </section>
 
     <section id = "projects">
-        <h2>Projects</h2>
+        <h3>Projects</h3>
 
         <table class="project-details">
             <tbody><tr>

@@ -1,49 +1,68 @@
 <!DOCTYPE html>
-
-<html lang="en"><head>
-<meta content="text/html; charset=utf-8" http-equiv="content-type"/>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Jackie Ling Resume</title>
-<!-- 
+<html lang="en">
+ <head>
+  <meta content="text/html; charset=utf-8" http-equiv="content-type"/>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>
+   Jackie Ling Resume
+  </title>
+  <!-- 
         NOTE: HTML font size converted to pdf not 1 to 1
         Increase HTML font size by 25% to compensate    
     -->
-<style>
-        @page {
+  <style>
+   /* @page {
             size: letter;
-        }
+            margin: 1in; 
+        } */
+       
+        html {
+            display: flex;
+            justify-content: center;
+            margin: 0;
+            padding: 0;
+            }
         body {
-            font-family: helvetica, sans-serif;
-            margin: 40px auto;
-            max-width: 800px;
-            max-height: 1000px;
-            line-height: 1.5;
-            font-size: 18px;
+            font-family: Helvetica, sans-serif;
+            /* padding: 2in; margins */
+            max-width: 8.5in;
+            /* max-height: 1056px; */
+            line-height: 1.2;
+            font-size: 12pt;
             color: #333;
+            padding: .75in;
+            margin: 0;
+            border: 1px dashed red;
         }
         h1 {
-            text-align: center;
+            /* text-align: center; */
             color: #2c3e50;
+            margin-top: 0px;
             margin-bottom: 0px;
             padding-bottom: 0;
-            
+            font-size: 50px;
+            line-height: 20px;
+            /* border: 1px dashed green; */
         }
-        h2 {
+        h3 {
             text-align: left;
             color: #2c3e50;
             text-transform: uppercase;
+          
+            line-height: 18px;
+            
+            
+            border-bottom: 2px solid #2c3e50;
+            margin-bottom: 2px; /* Remove any default top margin */
+            padding-bottom: 0; /* Ensure no extra padding */
         }
      
         section {
             margin-bottom: 10px;
             padding-bottom: 0;
         }
-        h2 {
-            border-bottom: 2px solid #2c3e50;
-            margin-bottom: 5px; /* Remove any default top margin */
-            padding-bottom: 0; /* Ensure no extra padding */
-        }
+   
         .title {
             font-weight: bold;
             color: #34495e;
@@ -63,119 +82,297 @@
         .company {
             text-align: left;
         } 
-        .title, .project-title, .university{
+        .title, .project-title, .university {
             text-align: left;
             font-weight: bold;
         }
-        .date, .location{
+        .date, .location {
             text-align: right;
-            font-style: italic;
+            /* font-style: italic; */
         }
-        .skills{
+        .skills {
             width: 30%;
         }
         a { /* Gets rid of the blue and underline from links */
             text-decoration: none;
             color: black;
         }
-        .address, .phone {
-            text-align: left;
-            width: 33%;
-        }
-        .email {
-            text-align: center;
-            width: 33%;
-        }
-        .link {
-            text-align: right;
-            width: 33%;
-        }
         #projects {
             display: none;
         }
-        #tmp{
-            display: none;
-        }
+        .header-1 {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
         
-    </style>
-</head>
-<body>
-<h1>Jackie Ling</h1>
-<table class="contacts">
-<tbody><tr>
-<td class="address">Staten Island, NY</td>
-<td class="email"><a href="mailto:jackie.ling.jobs@gmail.com">jackie.ling.jobs@gmail.com</a></td>
-<td class="link"><a href="http://www.github.com/LingJackie">github.com/LingJackie</a> </td>
-</tr>
-<tr>
-<td class="phone">(646)-881-1221</td>
-<td></td>
-<td class="link"><a href="https://www.linkedin.com/in/jackie-ling/">linkedin.com/in/jackie-ling</a> </td>
-</tr>
-</tbody></table>
-<section id="work-experience">
-<h2>Relevant Experience</h2>
-<table class="experience" id="tmp">
-<tbody>
-<tr>
-<td class="title">Junior Software Developer</td>
-<td class="date">Apr 2022 - Jan 2023</td>
-</tr>
-<tr>
-<td class="company">Genspark</td>
-<td class="location">Middletown, NJ</td>
-</tr>
-</tbody>
-</table>
-<ul id="tmp">
-<li>
-</li>
-</ul>
-<table class="experience"><tbody><tr><td class="title">Junior Software Engineer</td><td class="date">Apr 2022 – Jan 2023</td></tr><tr><td class="company">Genspark</td><td class="location">Middletown, NJ</td></tr></tbody></table><ul class="bullets"><li>Streamlined software development processes, collaborating across time zones using Agile methodologies and tools such as Jira for defect tracking and Bitbucket for version control</li><li>Developed and implemented comprehensive automated test suites, including unit, integration, and end-to-end tests using Jest and Selenium</li><li>Enhanced application performance and user experience by optimizing dashboard components, resulting in a 15% reduction in load times</li><li>Developed robust backend RESTful APIs and web applications using Node.js and Springboot, contributing to scalable internal tools</li><li>Contributed to a structured knowledge base by writing and improving internal documentation, streamlining onboarding processes and reducing time by 20%</li></ul><table class="experience"><tbody><tr><td class="title">Software Engineer Intern</td><td class="date">Sept 2021 – Dec 2021</td></tr><tr><td class="company">Spotlist Inc.</td><td class="location">Remote, NY</td></tr></tbody></table><ul class="bullets"><li>Practiced modern Agile methodologies and utilized Git for version control, participating in sprint planning and daily stand-ups to manage codebase changes</li><li>Contributed to software quality by writing automated unit tests using pytest and employing Postman for API design and testing</li><li>Gained hands-on experience with cloud platforms, deploying applications on AWS and managing data with services like EC2 and S3</li><li>Developed backend functionalities using Django, contributing to the creation of robust web applications</li><li>Assisted in creating and maintaining project documentation, contributing to a valuable knowledge base</li></ul></section>
-<section id="education">
-<h2>Education</h2>
-<table class="education-details">
-<tbody><tr>
-<td class="university">University at Buffalo</td>
-<td class="date">May 2020</td>
-</tr>
-<tr>
-<td class="degree">Bachelor of Science - Computer Science</td>
-<td class="location">Buffalo, NY</td>
-</tr>
-</tbody></table>
-</section>
-<section id="technical_skills">
-<h2>Technical Skills</h2>
-<table>
-<tbody><tr>
-<td class="skills"><strong>Languages:</strong> </td>
-<td>JavaScript, TypeScript, SQL, Python, Java, HTML, CSS, C#</td>
-</tr>
-<tr>
-<td class="skills"><strong>Frameworks/Libraries:</strong> </td>
-<td>React Native, Angular, Spring, Django, Node.js, .NET</td>
-</tr>
-<tr>
-<td class="skills"><strong>Databases:</strong> </td>
-<td>PostgreSQL, MongoDB</td>
-</tr>
-<tr>
-<td class="skills"><strong>Tools:</strong> </td>
-<td>Git, AWS, Visual Studio, Jira, Maven, Postman</td>
-</tr>
-</tbody></table>
-</section>
-<section id="projects">
-<h2>Projects</h2>
-<table class="project-details">
-<tbody><tr>
-<td class="project-title">Dormant - PoE2 Trade Overlay</td>
-<td class="date">2025</td>
-</tr>
-</tbody></table>
-<ul>
-<li>Developing a custom game overlay using Electron, React, and Node.js to improve in-game trading</li>
-</ul>
-</section>
-</body></html>
+        }
+        .full-name h1 {
+            font-size: 60px;
+            margin: 0;
+            line-height: 1.1;
+            color: #2c3e50;
+        }
+
+        .contact-info {
+            font-size: 12pt;
+            text-align: right;
+            line-height: 1.5;
+            max-width: 40%;
+        }
+        .contact-info p {
+            margin: 0;
+            padding: 0px;
+            line-height: 16px;  
+        }
+  </style>
+ </head>
+ <body>
+  <!-- <table class="contacts">
+        <tbody><tr>
+            <td class="email"><a href="mailto:jackie.ling.jobs@gmail.com">jackie.ling.jobs@gmail.com</a></td>
+            <td class="address">Staten Island, NY 10304</td>
+            <td class="link"><a href="http://www.github.com/LingJackie">github.com/LingJackie</a>  </td>     
+        </tr>
+        <tr>
+            <td class="phone">(646)-881-1221</td>
+            <td></td>
+            <td class="link"><a href="https://www.linkedin.com/in/jackie-ling/">linkedin.com/in/jackie-ling</a> </td>
+        </tr>
+    </tbody></table> -->
+  <div class="header-1">
+   <div class="full-name">
+    <h1>
+     Jackie Ling
+    </h1>
+   </div>
+   <div class="contact-info">
+    <p>
+     <a href="mailto:jackie.ling.jobs@gmail.com">
+      jackie.ling.jobs@gmail.com
+     </a>
+    </p>
+    <p>
+     (646)-881-1221
+    </p>
+    <p>
+     <a href="https://maps.app.goo.gl/2tNsZprJSy5F1w8U6">
+      Staten Island, NY 10304
+     </a>
+    </p>
+    <p>
+     <a href="https://www.linkedin.com/in/jackie-ling/">
+      linkedin.com/in/jackie-ling
+     </a>
+    </p>
+    <p>
+     <a href="http://www.github.com/LingJackie">
+      github.com/LingJackie
+     </a>
+    </p>
+   </div>
+  </div>
+  <section id="work-experience">
+   <h3>
+    Experience
+   </h3>
+
+   <table class="experience">
+    <tbody>
+     <tr>
+      <td class="title">
+       Freelance AI Data Contributor
+      </td>
+      <td class="date">
+       Mar 2023 - Present
+      </td>
+     </tr>
+     <tr>
+      <td class="company">
+       Various Short-Term Contracts
+      </td>
+      <td class="location">
+       New York, NY
+      </td>
+     </tr>
+    </tbody>
+   </table>
+   <ul class="bullets">
+    <li>
+     Edited and evaluated AI-generated visuals using Photoshop to ensure visual quality and consistency
+    </li>
+    <li>
+     Worked on multiple projects providing diverse training data to AI systems
+    </li>
+    <li>
+     Participated in motion data recording projects, contributing to multimedia content development
+    </li>
+    <li>
+     Ensured high standards of data quality, reflecting strong attention to detail
+    </li>
+    <li>
+     Supported AI model improvement through meticulous data contribution and quality review
+    </li>
+   </ul>
+   <table class="experience">
+    <tbody>
+     <tr>
+      <td class="title">
+       Junior Software Engineer
+      </td>
+      <td class="date">
+       Apr 2022 - Jan 2023
+      </td>
+     </tr>
+     <tr>
+      <td class="company">
+       Genspark
+      </td>
+      <td class="location">
+       Middletown, NJ
+      </td>
+     </tr>
+    </tbody>
+   </table>
+   <ul class="bullets">
+    <li>
+     Developed and styled web applications using HTML and CSS, ensuring responsive and consistent front-end design
+    </li>
+    <li>
+     Worked in an Agile team, managing project tasks and bugs with Jira, ensuring timely product delivery
+    </li>
+    <li>
+     Collaborated with cross-functional teams and senior developers to troubleshoot technical issues and maintain web application functionality
+    </li>
+    <li>
+     Wrote and improved internal documentation, enhancing clarity and efficiency for team processes
+    </li>
+    <li>
+     Optimized web application components, improving performance and user experience
+    </li>
+   </ul>
+   <table class="experience">
+    <tbody>
+     <tr>
+      <td class="title">
+       Software Engineer Intern
+      </td>
+      <td class="date">
+       Sept 2021 - Dec 2021
+      </td>
+     </tr>
+     <tr>
+      <td class="company">
+       Spotlist Inc.
+      </td>
+      <td class="location">
+       Remote, NY
+      </td>
+     </tr>
+    </tbody>
+   </table>
+   <ul class="bullets">
+    <li>
+     Worked in an Agile team, participating in sprint planning and daily stand-ups, demonstrating strong collaboration and task management
+    </li>
+    <li>
+     Developed backend API functionality to upload and store media content to AWS S3 buckets, supporting digital asset management
+    </li>
+    <li>
+     Assisted in writing comprehensive documentation for APIs and project procedures
+    </li>
+    <li>
+     Attended weekly meetings with technical and non-technical stakeholders to discuss project progress and ensure alignment
+    </li>
+    <li>
+     Utilized Git for version control to maintain a clean and organized codebase, ensuring efficient project workflows
+    </li>
+   </ul>
+  </section>
+  <section id="education">
+   <h3>
+    Education
+   </h3>
+   <table class="education-details">
+    <tbody>
+     <tr>
+      <td class="university">
+       University at Buffalo
+      </td>
+      <td class="location">
+       Buffalo, NY
+      </td>
+     </tr>
+     <tr>
+      <td class="degree">
+       Bachelor of Science - Computer Science
+      </td>
+      <td class="date">
+       May 2020
+      </td>
+     </tr>
+    </tbody>
+   </table>
+  </section>
+  <section id="technical_skills">
+   <h3>
+    Technical Skills
+   </h3>
+   <table>
+    <tbody>
+     <tr>
+      <td class="skills">
+       <strong>
+        Languages:
+       </strong>
+      </td>
+      <td>
+       JavaScript, TypeScript, SQL, Python, Java, HTML, CSS, C#
+      </td>
+     </tr>
+     <tr>
+      <td class="skills">
+       <strong>
+        Frameworks/Libraries:
+       </strong>
+      </td>
+      <td>
+       React Native, Angular, Spring, Django, Node.js, .NET
+      </td>
+     </tr>
+     <tr>
+      <td class="skills">
+       <strong>
+        Tools:
+       </strong>
+      </td>
+      <td>
+       Git, AWS, Visual Studio, Jira, Maven, Postman
+      </td>
+     </tr>
+    </tbody>
+   </table>
+  </section>
+  <section id="projects">
+   <h3>
+    Projects
+   </h3>
+   <table class="project-details">
+    <tbody>
+     <tr>
+      <td class="project-title">
+       Dormant - PoE2 Trade Overlay
+      </td>
+      <td class="date">
+       2025
+      </td>
+     </tr>
+    </tbody>
+   </table>
+   <ul>
+    <li>
+     Developing a custom game overlay using Electron, React, and Node.js to improve in-game trading
+    </li>
+   </ul>
+  </section>
+ </body>
+</html>

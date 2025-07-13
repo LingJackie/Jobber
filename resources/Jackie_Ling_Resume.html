@@ -11,58 +11,77 @@
     <style>
         @page {
             size: letter;
+            /* margin: 1in; */
         }
+
         body {
             font-family: helvetica, sans-serif;
-            margin: 40px auto;
-            max-width: 800px;
-            max-height: 1000px;
-            line-height: 1.5;
-            font-size: 18px;
+            padding: .6in; /* margins */
+            max-width: 816px;
+            max-height: 1056px;
+            line-height: 14px;
+            font-size: 12px;
             color: #333;
+            margin: auto;
+            /* border: 1px dashed red; */
         }
+        html {
+            margin: 0;
+            padding: 0;
+            }
+
         h1 {
             text-align: center;
             color: #2c3e50;
+            margin-top: 0px;
             margin-bottom: 0px;
             padding-bottom: 0;
-            
+            /* font-size: 24px; */
+            line-height: 20px;
+            /* border: 1px dashed green; */
         }
-        h2 {
+        h3 {
             text-align: left;
             color: #2c3e50;
             text-transform: uppercase;
+          
+            line-height: 18px;
+            
+            
+            border-bottom: 2px solid #2c3e50;
+            margin-bottom: 2px; /* Remove any default top margin */
+            padding-bottom: 0; /* Ensure no extra padding */
         }
      
         section {
             margin-bottom: 10px;
             padding-bottom: 0;
         }
-        h2 {
-            border-bottom: 2px solid #2c3e50;
-            margin-bottom: 5px; /* Remove any default top margin */
-            padding-bottom: 0; /* Ensure no extra padding */
-        }
-        .job-title {
+   
+        .title {
             font-weight: bold;
             color: #34495e;
         }
         ul {
-            padding-left: 20px;
+            padding-left: 16px;
             margin-top: 0; 
             padding-top: 0; 
         }
-        .job-details, .project-details, .education-details, .contacts{
+        li {
+            /* font-size: 22px;  */
+            /* text-indent: -4px; */
+        }
+        .experience, .project-details, .education-details, .contacts{
             width: 100%;
             border-collapse: collapse;
         }
-        .job-details td {       
+        .experience td {       
             vertical-align: top;
         }
         .company {
             text-align: left;
         } 
-        .job-title, .project-title, .university{
+        .title, .project-title, .university{
             text-align: left;
             font-weight: bold;
         }
@@ -77,7 +96,6 @@
             text-decoration: none;
             color: black;
         }
-
         .address, .phone {
             text-align: left;
             width: 33%;
@@ -86,10 +104,12 @@
             text-align: center;
             width: 33%;
         }
-
         .link {
             text-align: right;
             width: 33%;
+        }
+        #projects {
+            display: none;
         }
         
     </style>

@@ -1,7 +1,7 @@
 import asyncio
 import re
 import logging
-from playwright.async_api import async_playwright, TimeoutError as PlaywrightTimeoutError
+from playwright.async_api import async_playwright, Page, TimeoutError as PlaywrightTimeoutError
 
 from timing import log
 from file_handler import FileHandler
@@ -31,7 +31,7 @@ class JobPostScraper:
         self.f_handler = FileHandler()
         self.job_app_selector_dict = self.f_handler.load_job_app_selectors() # loads json containing a repository of site element selectors
 
-    async def extract_job_data(self, page, selector_list: list):
+    async def extract_job_data(self, page: Page, selector_list: list):
         """
         Grabs innerHTML of page based on selectors
 
@@ -62,6 +62,12 @@ class JobPostScraper:
         return "default"
     
     def extract_company_name(self, text: str) -> str:
+        """
+        Tries to extract the companie's name from the job description
+
+        :param text: job description
+        :return: company's name
+        """ 
         for pattern in patterns:
             match = re.search(pattern, text)
             if match:
@@ -69,6 +75,14 @@ class JobPostScraper:
         return "n/a"
     
     async def scrape_job_posting(self, url: str, max_retries: int = 3, delay: float = 2.0) -> bool:
+        """
+        Grabs job information from url and save it into class instance variables 
+
+        :param url: sef explanatory
+        :max_retries: # of retries to open url
+        :delay: delay in seconds bewteen retries
+        :return: True if successful
+        """ 
         for attempt in range(1, max_retries + 1):
             browser = None
             try:
