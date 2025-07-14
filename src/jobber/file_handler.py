@@ -1,7 +1,9 @@
 import json
 import logging
+import base64
 from pathlib import Path
 from bs4 import BeautifulSoup
+from playwright.async_api import async_playwright
 
 logger = logging.getLogger(__name__)
 
@@ -53,8 +55,15 @@ class FileHandler:
             return BeautifulSoup("", "html.parser")
         
     def save_html(self, parsed_html: BeautifulSoup, output_path: str = None) -> bool:
+        """
+        Saves a BeautifulSoup object as an HTML file
+        :param parsed_html: BeautifulSoup object to save
+        :param output_path: Optional path to save the HTML file. If None, uses a
+        default path in the output directory.
+        :return: True if the file was saved successfully, False otherwise
+        """
         if output_path is None:
-            output_path = str(self.output_dir)
+            output_path = str(self.output_dir / "resume_wip.html")
         try:
             with open(output_path, "w", encoding="utf-8") as f:
                 f.write(parsed_html.prettify())
@@ -62,5 +71,53 @@ class FileHandler:
         except Exception as e:
             logger.error("Unable to write file: ", e)
         return False
-         
-            
+           
+    async def generate_pdf(self, dir_name: str, output_name: str = "Resume.pdf", input_name: str = "resume_wip.html") -> bool:
+        """
+        Generates a PDF from an HTML file using Chrome DevTools 
+        :param dir_name: Directory name where the HTML file and pdf will be stored
+        :param output_name: Name of the output PDF file
+        :param input_name: Name of the input HTML file
+        :return: True if the PDF was generated successfully, False otherwise
+        """
+        try:
+            async with async_playwright() as p:
+                browser = await p.chromium.launch(headless=True)
+                context = await browser.new_context()
+                page = await context.new_page()
+
+                await page.goto(str(self.output_dir / dir_name / input_name))
+
+                # Connect to Chrome DevTools Protocol
+                client = await context.new_cdp_session(page)
+
+                # Trigger PDF generation
+                pdf_data = await client.send("Page.printToPDF", {
+                    "preferCSSPageSize": False,
+                    'marginLeft': 0,
+                    'marginRight': 0,
+                    'marginTop': 0,
+                    'marginBottom': .75 # Needs to be 1 for the PDF to not be cut off at the bottom
+                })
+                output_path = str(self.output_dir / dir_name / output_name)
+                with open(output_path, "wb") as f:
+                    f.write(base64.b64decode(pdf_data["data"]))
+                await browser.close()
+                return True
+        except Exception as e:
+            logger.error("Error generating PDF: ", e)
+            return False
+        
+    async def print_length(self):
+        async with async_playwright() as p:
+            browser = await p.chromium.launch(headless=False)
+            page = await browser.new_page()
+
+            # Load your local HTML file (replace with your actual file path or URL)
+            await page.goto(str(self.base_dir / 'output.html'))
+
+            # Evaluate scrollHeight of entire document
+            scroll_height = await page.evaluate("document.documentElement.scrollHeight")
+            print(f"Page ScrollHeight: {scroll_height}px")
+
+            await browser.close()

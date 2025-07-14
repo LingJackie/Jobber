@@ -23,12 +23,10 @@
             /* max-height: 1056px; */
             line-height: 1.2;
             font-size: 12pt;
-            color: #333;
-            /* padding-left: .75in;
-            padding-right: .75in; */
+            /* color: #333; */
             padding: .75in;
             margin: 0;
-            border: 1px dashed red;
+            /* border: 3px dashed black; */
         }
         h1 {
             /* text-align: center; */
@@ -67,17 +65,17 @@
             margin-top: 0; 
             padding-top: 0; 
         }
-        .experience, .project-details, .education-details, .contacts{
+        .experience table, .project-details, .education-details, .contacts{
             width: 100%;
             border-collapse: collapse;
         }
-        .experience td {       
+        .experience table td {       
             vertical-align: top;
         }
         .company {
             text-align: left;
         } 
-        .title, .project-title, .university {
+        .title, .project-title, .degree {
             text-align: left;
             font-weight: bold;
         }
@@ -87,8 +85,6 @@
         }
         .skills {
             width: 30%;
-            break-before: page;
-
         }
         a { /* Gets rid of the blue and underline from links */
             text-decoration: none;
@@ -153,7 +149,8 @@
     </div>
     <section id="work-experience">
         <h3>Experience</h3>
-        <table class="experience">
+        <!-- <div class="experience">
+            <table>
             <tbody>
                 <tr>
                     <td class="title">Cashier</td>
@@ -164,25 +161,27 @@
                     <td class="location">Amityville, NY</td>
                 </tr>
             </tbody>
-        </table>
-        <ul>
-            <li>Provided efficient customer service, ensuring a positive dining experience for all guests</li>
-            <li>Coordinated with kitchen staff to ensure smooth and timely order fulfillment</li>
-            <li>Organized inventory, identifying supply shortages and proactively communicating them to management</li>
-            <li>Managed customer inquiries and resolved issues and complaints</li>
-        </ul>
+            </table>
+            <ul>
+                <li>Provided efficient customer service, ensuring a positive dining experience for all guests</li>
+                <li>Coordinated with kitchen staff to ensure smooth and timely order fulfillment</li>
+                <li>Organized inventory, identifying supply shortages and proactively communicating them to management</li>
+                <li>Managed customer inquiries and resolved issues and complaints</li>
+            </ul>
+        </div> -->
+        
     </section>
 
     <section id = "education">
         <h3>Education</h3>
         <table class="education-details">
             <tbody><tr>
-                <td class="university">University at Buffalo</td>
-                <td class="location">Buffalo, NY</td>
-            </tr>
-            <tr>
                 <td class="degree">Bachelor of Science - Computer Science</td>
                 <td class="date">May 2020</td>
+            </tr>
+            <tr>
+                <td class="university">University at Buffalo</td>
+                <td class="location">Buffalo, NY</td>
             </tr>
         </tbody></table>
     </section>

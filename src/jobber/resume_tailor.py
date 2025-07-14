@@ -3,6 +3,8 @@ import json
 import asyncio
 from google import genai
 from bs4 import BeautifulSoup
+from pathlib import Path
+from datetime import datetime
 from job_post_scraper import JobPostScraper
 from file_handler import FileHandler
 from httpx import TimeoutException, RequestError
@@ -23,7 +25,8 @@ class ResumeTailor:
         self.parsed_template = parsed_template
         self.f_handler = FileHandler()
         self.scraper = JobPostScraper()
-    def parse_work_experience(self, payload: str | dict) -> dict | None:
+        
+    def _parse_work_experience(self, payload: str | dict) -> dict | None:
         """
         Attempts to ensure the input is a well-formed dict with expected structure
 
@@ -38,13 +41,13 @@ class ResumeTailor:
                 return None
         return payload
 
-    def update_work_exp(self, updated_work_exp: dict) -> bool:
+    def _update_work_exp(self, updated_work_exp: dict) -> bool:
         """
         Updates resume dict's work experience section
 
         :param updated_work_exp: work experience that should be retrieved from LLM
         """ 
-        updated_work_exp = self.parse_work_experience(updated_work_exp)
+        updated_work_exp = self._parse_work_experience(updated_work_exp)
         if updated_work_exp is None:
             return False
         old_work_exp = self.resume["data"]["work_experience"]
@@ -57,7 +60,7 @@ class ResumeTailor:
                 old_exp["responsibilities"] = updated_exp["responsibilities"]
         return True
             
-    async def get_tailored_work_exp(self, job_desc: str, max_retries: int = 3, delay: float = 2.0) -> dict | None:
+    async def _get_tailored_work_exp(self, job_desc: str, num_bullets: int = 4, max_retries: int = 3, delay: float = 2.0) -> dict | None:
         """
         Makes LLM tailor resume job descriptions based on the job posting
 
@@ -76,7 +79,8 @@ class ResumeTailor:
 
         prompt = (
             "You are a resume optimization assistant. I will give you a json containing my job title and a list of my job "
-            "responsibilities along with a job posting description. Your job is to rewrite and select 5 bullet points per role "
+            "responsibilities along with a job posting description. Your job is to rewrite and select " + str(num_bullets) + " bullet points per role. "
+            "Order them by importance and relevance to the job description. "
             "that are most relevant to the job description. You are allowed to combine bullets as well. Format the rewrite in pure json, "
             "the same way as my job responsibilities. Do not include any markdown or explanations. Use double quotes. No periods. "
             "Here is my experience and the job app:\n" + json.dumps(extracted_exp) + "\n" + job_desc
@@ -110,7 +114,7 @@ class ResumeTailor:
         return None
 
     
-    def populate_resume(self):
+    def _populate_resume(self):
         """
         Adds data from self.resume into a soup
 
@@ -121,7 +125,8 @@ class ResumeTailor:
 
         # Inject each experience as a complete block
         for exp in self.resume["data"]["work_experience"].values():# TODO Placeholder
-            table = self.parsed_template.new_tag("table", **{"class": "experience"})
+            div = self.parsed_template.new_tag("div", **{"class": "experience"})
+            table = self.parsed_template.new_tag("table")
 
             # table body
             tbody = self.parsed_template.new_tag("tbody")
@@ -154,18 +159,58 @@ class ResumeTailor:
                 ul.append(li)
 
             # Assemble and inject
-            section.append(table)
+            section.append(div)
+            div.append(table)
             table.append(tbody)
-            section.append(ul)
+            div.append(ul)
 
-    def write_resume_to_html(self, file_name: str = "resume_wip.html"):
+    def _write_resume_to_html(self) -> bool :
         """
-        Converts BeautifulSoup object into an html file
-
-        :param file_name: name of html file
+        Converts BeautifulSoup object into an html file and places its own directory based on the job posting and timestamp
         """ 
-        self.f_handler.save_html(self.parsed_template, file_name) # TODO file name needs to be changed    
+        output_dir = self.f_handler.output_dir / self._get_output_dir_name() 
+        output_dir.mkdir(parents=True, exist_ok=True)
+        file_name = "resume_wip.html"
+        return self.f_handler.save_html(self.parsed_template, str(output_dir / file_name)) 
+        
+    def _slugify(self, text: str) -> str:
+        """
+        Converts a string into a slug format (lowercase, spaces replaced with dashes)
 
+        :param text: input string
+        :return: slugified string
+        """ 
+        if not text:
+            return "n-a"
+        return text.lower().replace(" ", "-").replace("_", "-")
+    
+    def _get_timestamp(self) -> str:
+        """
+        Returns the current timestamp in the format YYYY-MM-DD_HH-MM 
+        Example: 2025-07-13_04-34
+        """
+        return datetime.now().strftime("%Y-%m-%d_%H-%M")
+    
+    def _get_output_dir_name(self) -> str:
+        """
+        Create a new directory name based on timestamp_companyname_title
+        Should look something like this: '2025-07-13_04-34_Spotlist-Inc_Software-Engineer_v1'
+                                        
+        """ 
+        new_company_name = self._slugify(self.scraper.company_name)
+        new_job_title = self._slugify(self.scraper.job_title)
+        return f"{self._get_timestamp()}_{new_company_name}_{new_job_title}_v1"
+
+    def _generate_resume_pdf_name(self) -> str:
+        """
+        Generates a resume file name based on the applicant's name 
+        Example: 'Jackie_Ling_Resume.pdf'
+        """ 
+        name = self.resume['data']['contact_info']['name']
+        name = name.replace(" ", "_")
+       
+        return f"{name}_Resume.pdf"
+    
     async def generate_tailored_resume(self, url: str):
         """
         Pipeline:
@@ -176,10 +221,14 @@ class ResumeTailor:
             5. Convert html resume to pdf
         """ 
         job_post_scraping = await self.scraper.scrape_job_posting(url)
-        tailored = await self.get_tailored_work_exp(self.scraper.job_description)
-        self.update_work_exp(tailored)
-        self.populate_resume()
-        self.write_resume_to_html()
+        tailored = await self._get_tailored_work_exp(self.scraper.job_description)
+        self._update_work_exp(tailored)
+        self._populate_resume()
+        self._write_resume_to_html()
+        await self.f_handler.generate_pdf(
+            dir_name=self._get_output_dir_name(),
+            output_name=self._generate_resume_pdf_name()
+        )
 
 
     # def infer_schema_from_example(self) -> dict:

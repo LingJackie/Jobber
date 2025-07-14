@@ -12,8 +12,7 @@ logger = logging.getLogger(__name__)
 
 
 patterns = [
-        
-        r"At ([A-Z][\w&\-\s]+),",
+        r"At\s+([A-Z][\w\s&\-]+?)(?:,|\s|$)",
         r"Join the team at ([A-Z][\w&\-\s]+?)\b",
         r"([A-Z][\w&\-\s]+?) is a (?:leading|fast-growing|well-known|top-tier)",
         r"([A-Z][\w&\-\s]+?) is an equal opportunity employer"
@@ -22,16 +21,16 @@ patterns = [
 
 class JobPostScraper:
     def __init__(self):
-        self.job_title = "n/a"
-        self.job_location = "n/a"
-        self.job_salary = "n/a"
-        self.job_description = "n/a"
-        self.company_name = "n/a"
+        self.job_title = "none"
+        self.job_location = "none"
+        self.job_salary = "none"
+        self.job_description = "none"
+        self.company_name = "none"
 
         self.f_handler = FileHandler()
         self.job_app_selector_dict = self.f_handler.load_job_app_selectors() # loads json containing a repository of site element selectors
 
-    async def extract_job_data(self, page: Page, selector_list: list):
+    async def _extract_job_data(self, page: Page, selector_list: list) -> str:
         """
         Grabs innerHTML of page based on selectors
 
@@ -46,10 +45,12 @@ class JobPostScraper:
                 if text and text.strip():
                     return text.strip()
             except:
-                continue
-        return None
+                logger.debug(f"Selector failed: {selector} → {e}")
+        logger.warning(f"No selectors yielded results from list: {selector_list}")
+        return "none"
+
     
-    def get_domain_key(self, url: str) -> str:
+    def _get_domain_key(self, url: str) -> str:
         """
         Grabs the domain and extension. This is used elsewhere as a dict key for grabbing domain selectors
 
@@ -61,7 +62,7 @@ class JobPostScraper:
                 return domain
         return "default"
     
-    def extract_company_name(self, text: str) -> str:
+    def _extract_company_name(self, text: str) -> str:
         """
         Tries to extract the companie's name from the job description
 
@@ -72,7 +73,7 @@ class JobPostScraper:
             match = re.search(pattern, text)
             if match:
                 return match.group(1).strip()
-        return "n/a"
+        return "none"
     
     async def scrape_job_posting(self, url: str, max_retries: int = 3, delay: float = 2.0) -> bool:
         """
@@ -91,15 +92,15 @@ class JobPostScraper:
                     page = await browser.new_page()
                     await page.goto(url, timeout=10000)
 
-                    selector_list = self.job_app_selector_dict.get(self.get_domain_key(url))
+                    selector_list = self.job_app_selector_dict.get(self._get_domain_key(url))
 
                     if not selector_list:
                         logger.error(f"No selector list found")
                         return False
 
-                    job_title_task = self.extract_job_data(page, selector_list["job_title"])
-                    location_task  = self.extract_job_data(page, selector_list["job_loc"])
-                    desc_task      = self.extract_job_data(page, selector_list["job_desc"])
+                    job_title_task = self._extract_job_data(page, selector_list["job_title"])
+                    location_task  = self._extract_job_data(page, selector_list["job_loc"])
+                    desc_task      = self._extract_job_data(page, selector_list["job_desc"])
 
                     job_title, job_location, job_description = await asyncio.gather(
                         job_title_task, location_task, desc_task
@@ -108,7 +109,7 @@ class JobPostScraper:
                     self.job_title = job_title
                     self.job_location = job_location
                     self.job_description = job_description
-                    self.company_name = self.extract_company_name(self.job_description)
+                    self.company_name = self._extract_company_name(self.job_description)
 
                     return True
 
