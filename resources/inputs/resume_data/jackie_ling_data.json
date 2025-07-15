@@ -1,15 +1,15 @@
 {
     "data": {
         "skills": {
-            "languages": [
+            "coding_languages": [
                 "HTML", "CSS", "JavaScript", "Typescript", "SQL", "Java", "C#", "Python"
             ],
-            "frameworks_libraries": [
+            "frameworks_and_libraries": [
                 "Angular", "React Native", "React", ".Net", "Django", "Node.js", "NodeJS", "Spring", "Spring Boot"
             ],
             "databases": ["MySQL","MongoDB", "PostgreSQL"],
-            "tools_softwares": [
-                "Git", "AWS", "Visual Studio", "Jira", "Postman", "Unity", "Microscoft Suite", "Adobe Suite"
+            "softwares": [
+                "Github", "Bitbucket", "AWS", "Visual Studio", "Jira", "Postman", "Unity", "Blender", "MS Suite (Word, Excel, PowerPoint, Outlook, Teams)", "Adobe CC (Photoshop, Premiere Pro)"
             ],
             "others": [ 
                 "REST", "RESTful","Web Services", 
@@ -47,7 +47,7 @@
                 "Used Bitbucket to manage code version control",
                 "Tech stack was Angular and Node.js for some projects and React and Springboot for others",
                 "Style the front end with Angular",
-                "Worked on RESTful APIs in the backend with Node.js",
+                "Helped Work on RESTful APIs in the backend with Node.js",
                 "Used HTML, CSS, to style web app",
                 "Wrote SQL queries to grab data from relational databases",
                 "Used npm to manage dependencies",

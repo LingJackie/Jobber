@@ -8,6 +8,7 @@ from datetime import datetime
 from job_post_scraper import JobPostScraper
 from file_handler import FileHandler
 from httpx import TimeoutException, RequestError
+import re
 
 
 logging.basicConfig(level=logging.INFO)
@@ -25,8 +26,9 @@ class ResumeTailor:
         self.parsed_template = parsed_template
         self.f_handler = FileHandler()
         self.scraper = JobPostScraper()
+        self.most_recent_output_dir = None
         
-    def _parse_work_experience(self, payload: str | dict) -> dict | None:
+    def _parse_llm_json_response(self, payload: str | dict) -> dict | None:
         """
         Attempts to ensure the input is a well-formed dict with expected structure
 
@@ -41,25 +43,31 @@ class ResumeTailor:
                 return None
         return payload
 
-    def _update_work_exp(self, updated_work_exp: dict) -> bool:
+    def _update_work_exp(self, new_data: dict) -> bool:
         """
-        Updates resume dict's work experience section
+        Updates the work experience section of the resume dict with new data
 
-        :param updated_work_exp: work experience that should be retrieved from LLM
+        :param new_data: work experience and skills that should be retrieved from LLM
         """ 
-        updated_work_exp = self._parse_work_experience(updated_work_exp)
-        if updated_work_exp is None:
+        new_data = self._parse_llm_json_response(new_data)
+        if new_data is None or "work_experience" not in new_data or not isinstance(new_data["work_experience"], dict):
+            logger.error("Key 'work_experience' missing or invalid in LLM response")
             return False
+        
         old_work_exp = self.resume["data"]["work_experience"]
+        updated_work_exp = new_data["work_experience"]
         
         if len(old_work_exp) != len(updated_work_exp):
-            logger.error("Failed to update work history", exc_info=True)
-            return False
-        for old_exp, updated_exp in zip(old_work_exp.values(), updated_work_exp.values()):
-            if old_exp["title"] == updated_exp["title"]: 
-                old_exp["responsibilities"] = updated_exp["responsibilities"]
+            logger.warning("Work experience count mismatch between old and updated data")
+        for key in old_work_exp:
+            if key in updated_work_exp and old_work_exp[key]["title"] == updated_work_exp[key]["title"]:
+                old_work_exp[key]["responsibilities"] = updated_work_exp[key]["responsibilities"]
+        # Safely update skills if present
+        skills = new_data.get("skills", {})
+        self.resume["data"]["skills"]["softwares"] = skills.get("softwares", [])
+        self.resume["data"]["skills"]["coding_languages"] = skills.get("coding_languages", [])
         return True
-            
+    
     async def _get_tailored_work_exp(self, job_desc: str, num_bullets: int = 4, max_retries: int = 3, delay: float = 2.0) -> dict | None:
         """
         Makes LLM tailor resume job descriptions based on the job posting
@@ -68,21 +76,37 @@ class ResumeTailor:
         :return: LLM response which should be in json format converted to dict
         """ 
 
-        # only grabs work responsibilities from resume dict
-        extracted_exp = {
-            key: {
-                "title": value["title"],
-                "responsibilities": value["responsibilities"]
-            }
-            for key, value in self.resume["data"]["work_experience"].items()
-        }
+        # only grabs work responsibilities and skills from resume dict
+        # extracted_exp = {
+        #     key: {
+        #         "title": value["title"],
+        #         "responsibilities": value["responsibilities"]
+        #     }
+        #     for key, value in self.resume["data"]["work_experience"].items()
+        # }
 
+        extracted_exp = {
+            "work_experience": {
+                key: {
+                    "title": value["title"],
+                    "responsibilities": value["responsibilities"]
+                }
+                for key, value in self.resume["data"]["work_experience"].items()
+            },
+            "skills": {
+                "coding_languages": self.resume["data"]["skills"]["coding_languages"],
+                "softwares": self.resume["data"]["skills"]["softwares"]
+            }
+        }
         prompt = (
-            "You are a resume optimization assistant. I will give you a json containing my job title and a list of my job "
-            "responsibilities along with a job posting description. Your job is to rewrite and select " + str(num_bullets) + " bullet points per role. "
+            "You are a resume optimization assistant. "
+            "I will give you a json containing my work experience and skills along with a job posting description. "
+            "Your job is to rewrite and select " + str(num_bullets) + " bullet points per role that are most relevant to the job description."
             "Order them by importance and relevance to the job description. "
-            "that are most relevant to the job description. You are allowed to combine bullets as well. Format the rewrite in pure json, "
-            "the same way as my job responsibilities. Do not include any markdown or explanations. Use double quotes. No periods. "
+            "You are allowed to combine bullets as well. "
+            "Choose only the most relevant skills from the skills section. "
+            "Format the rewrite in pure json, the same schema as what I sent you. "
+            "Do not include any markdown or explanations. Use double quotes. No periods. "
             "Here is my experience and the job app:\n" + json.dumps(extracted_exp) + "\n" + job_desc
         )
 
@@ -114,7 +138,7 @@ class ResumeTailor:
         return None
 
     
-    def _populate_resume(self):
+    def _update_resume_work_exp(self):
         """
         Adds data from self.resume into a soup
 
@@ -124,7 +148,7 @@ class ResumeTailor:
         section = self.parsed_template.find(id="work-experience")
 
         # Inject each experience as a complete block
-        for exp in self.resume["data"]["work_experience"].values():# TODO Placeholder
+        for exp in self.resume["data"]["work_experience"].values():
             div = self.parsed_template.new_tag("div", **{"class": "experience"})
             table = self.parsed_template.new_tag("table")
 
@@ -152,7 +176,7 @@ class ResumeTailor:
             tr_right.append(location)
 
             # Bullet points
-            ul = self.parsed_template.new_tag("ul", **{"class": "bullets"})
+            ul = self.parsed_template.new_tag("ul", **{"class": "exp-bullets"})
             for bullet in exp["responsibilities"]:
                 li = self.parsed_template.new_tag("li")
                 li.string = bullet
@@ -163,6 +187,27 @@ class ResumeTailor:
             div.append(table)
             table.append(tbody)
             div.append(ul)
+    
+    def _update_resume_skills(self):
+        section = self.parsed_template.find(id="technical_skills")
+        table = self.parsed_template.new_tag("table")
+        tbody = self.parsed_template.new_tag("tbody")
+        section.append(table)
+        table.append(tbody)
+        for skill_type, skills in self.resume["data"]["skills"].items():
+            if skill_type == "coding_languages" or skill_type == "softwares":
+                tr = self.parsed_template.new_tag("tr")
+                td1 = self.parsed_template.new_tag("td", **{"class": "skill-type"})
+                td1.string = skill_type.replace("_", " ").title() + ":"
+
+                td2 = self.parsed_template.new_tag("td")
+                td2.string = ", ".join(skills) if skills else "None"
+
+                tr.append(td1)
+                tr.append(td2)
+                tbody.append(tr)
+               
+                
 
     def _write_resume_to_html(self) -> bool :
         """
@@ -197,21 +242,31 @@ class ResumeTailor:
         Should look something like this: '2025-07-13_04-34_Spotlist-Inc_Software-Engineer_v1'
                                         
         """ 
+        new_company_name = self.f_handler.sanitize_filename_and_directory(self.scraper.company_name)
+        
+        
         new_company_name = self._slugify(self.scraper.company_name)
         new_job_title = self._slugify(self.scraper.job_title)
         return f"{self._get_timestamp()}_{new_company_name}_{new_job_title}_v1"
 
     def _generate_resume_pdf_name(self) -> str:
         """
-        Generates a resume file name based on the applicant's name 
+        Generates a sanitized resume file name based on the applicant's name.
         Example: 'Jackie_Ling_Resume.pdf'
-        """ 
-        name = self.resume['data']['contact_info']['name']
+        """
+
+        name = self.resume['data']['contact_info'].get('name', '').strip()
+        if not name or name.lower() == "n-a":
+            name = "Applicant"
+        else:
+            # Capitalize first letter of each word
+            name = " ".join(word.capitalize() for word in name.split())
+        # Replace spaces with underscores
         name = name.replace(" ", "_")
-       
+        name = self.f_handler.sanitize_filename_and_directory(name)
         return f"{name}_Resume.pdf"
     
-    async def generate_tailored_resume(self, url: str):
+    async def generate_tailored_resume(self, url: str) -> bool:
         """
         Pipeline:
             1. Scrape job posting
@@ -220,16 +275,21 @@ class ResumeTailor:
             4. Insert LLM response into template and save as new html resume
             5. Convert html resume to pdf
         """ 
-        job_post_scraping = await self.scraper.scrape_job_posting(url)
+        if not (await self.scraper.scrape_job_posting(url)):
+            return False
         tailored = await self._get_tailored_work_exp(self.scraper.job_description)
-        self._update_work_exp(tailored)
-        self._populate_resume()
+        if not self._update_work_exp(tailored):
+            return False
+        if self._update_resume_work_exp():
+            return False
+        self._update_resume_skills()
         self._write_resume_to_html()
+        self.most_recent_output_dir = self._get_output_dir_name()
         await self.f_handler.generate_pdf(
-            dir_name=self._get_output_dir_name(),
+            dir_name=self.most_recent_output_dir,
             output_name=self._generate_resume_pdf_name()
         )
-
+        return True
 
     # def infer_schema_from_example(self) -> dict:
     #     def get_type(val):

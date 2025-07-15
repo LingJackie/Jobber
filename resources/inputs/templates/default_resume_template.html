@@ -18,19 +18,16 @@
         }
         body {
             font-family: Helvetica, sans-serif;
-            /* padding: 2in; margins */
             max-width: 8.5in;
             /* max-height: 1056px; */
             line-height: 1.2;
             font-size: 12pt;
-            /* color: #333; */
             padding: .75in;
             margin: 0;
-            /* border: 3px dashed black; */
+            /* border: 3px solid black; */
         }
         h1 {
             /* text-align: center; */
-            color: #2c3e50;
             margin-top: 0px;
             margin-bottom: 0px;
             padding-bottom: 0;
@@ -40,30 +37,22 @@
         }
         h3 {
             text-align: left;
-            color: #2c3e50;
             text-transform: uppercase;
-          
             line-height: 18px;
-            
-            
             border-bottom: 2px solid #2c3e50;
             margin-bottom: 2px; /* Remove any default top margin */
             padding-bottom: 0; /* Ensure no extra padding */
         }
      
         section {
-            margin-bottom: 10px;
+            margin-bottom: 0px;
             padding-bottom: 0;
         }
-   
-        .title {
-            font-weight: bold;
-            color: #34495e;
-        }
-        ul {
-            padding-left: 20px;
+        .exp-bullets {
+            padding-left: 25px;
             margin-top: 0; 
             padding-top: 0; 
+            margin-bottom: 5px;
         }
         .experience table, .project-details, .education-details, .contacts{
             width: 100%;
@@ -76,6 +65,8 @@
             text-align: left;
         } 
         .title, .project-title, .degree {
+            font-weight: bold;
+            color: #2c3e50;
             text-align: left;
             font-weight: bold;
         }
@@ -83,8 +74,10 @@
             text-align: right;
             /* font-style: italic; */
         }
-        .skills {
+        .skill-type {
             width: 30%;
+            color: #2c3e50;
+            font-weight: bold;
         }
         a { /* Gets rid of the blue and underline from links */
             text-decoration: none;
@@ -107,15 +100,15 @@
         }
 
         .contact-info {
-            font-size: 12pt;
+            font-size: 12px;
             text-align: right;
-            line-height: 1.5;
+            line-height: 1.1;
             max-width: 40%;
         }
         .contact-info p {
             margin: 0;
             padding: 0px;
-            line-height: 16px;  
+            /* line-height: 16px;   */
         }
         
     </style>
@@ -188,20 +181,18 @@
 
     <section id = "technical_skills">
         <h3>Technical Skills</h3>
-        <table>
-            <tbody><tr>
-                <td class="skills"><strong>Languages:</strong> </td>
-                <td>JavaScript, TypeScript, SQL, Python, Java, HTML, CSS, C#</td>
-            </tr>
-            <tr>
-                <td class="skills"><strong>Frameworks/Libraries:</strong> </td>
-                <td>React Native, Angular, Spring, Django, Node.js, .NET</td>
-            </tr>
-            <tr>
-                <td class="skills"><strong>Tools:</strong> </td>
-                <td>Git, AWS, Visual Studio, Jira, Maven, Postman</td>
-            </tr>
-        </tbody></table>
+        <!-- <table>
+            <tbody>
+                <tr>
+                    <td class="skill-type"><strong>Programming Languages:</strong> </td>
+                    <td>JavaScript, TypeScript, SQL, Python, Java, HTML, CSS, C#</td>
+                </tr>
+                <tr>
+                    <td class="skill-type"><strong>Tools:</strong> </td>
+                    <td>Git, AWS, Visual Studio, Jira, Maven, Postman</td>
+                </tr>
+            </tbody>
+        </table> -->
     </section>
 
     <section id = "projects">

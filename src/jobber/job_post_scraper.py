@@ -14,18 +14,18 @@ logger = logging.getLogger(__name__)
 patterns = [
         r"At\s+([A-Z][\w\s&\-]+?)(?:,|\s|$)",
         r"Join the team at ([A-Z][\w&\-\s]+?)\b",
-        r"([A-Z][\w&\-\s]+?) is a (?:leading|fast-growing|well-known|top-tier)",
+        r"([A-Z][\w&\-\s]+?) is a (?:leading|fast-growing|well-known|top-tier|global)",
         r"([A-Z][\w&\-\s]+?) is an equal opportunity employer"
         # r"([A-Z][\w&\-\s]+?) is looking for",
     ]
 
 class JobPostScraper:
     def __init__(self):
-        self.job_title = "none"
-        self.job_location = "none"
-        self.job_salary = "none"
-        self.job_description = "none"
-        self.company_name = "none"
+        self.job_title = "n-a"
+        self.job_location = "n-a"
+        self.job_salary = "n-a"
+        self.job_description = "n-a"
+        self.company_name = "n-a"
 
         self.f_handler = FileHandler()
         self.job_app_selector_dict = self.f_handler.load_job_app_selectors() # loads json containing a repository of site element selectors
@@ -43,11 +43,12 @@ class JobPostScraper:
                 el = page.locator(selector).first
                 text = await el.text_content(timeout=1500)
                 if text and text.strip():
+                    text = text.replace('\n', ' ').replace('\r', '') 
                     return text.strip()
-            except:
+            except Exception as e:
                 logger.debug(f"Selector failed: {selector} → {e}")
         logger.warning(f"No selectors yielded results from list: {selector_list}")
-        return "none"
+        return "n-a"
 
     
     def _get_domain_key(self, url: str) -> str:
@@ -73,7 +74,7 @@ class JobPostScraper:
             match = re.search(pattern, text)
             if match:
                 return match.group(1).strip()
-        return "none"
+        return "n-a"
     
     async def scrape_job_posting(self, url: str, max_retries: int = 3, delay: float = 2.0) -> bool:
         """

@@ -1,6 +1,7 @@
 import json
 import logging
 import base64
+import re
 from pathlib import Path
 from bs4 import BeautifulSoup
 from playwright.async_api import async_playwright
@@ -75,7 +76,7 @@ class FileHandler:
     async def generate_pdf(self, dir_name: str, output_name: str = "Resume.pdf", input_name: str = "resume_wip.html") -> bool:
         """
         Generates a PDF from an HTML file using Chrome DevTools 
-        :param dir_name: Directory name where the HTML file and pdf will be stored
+        :param dir_name: Directory name where the HTML file and pdf will be stored (Only the name, not the full path)
         :param output_name: Name of the output PDF file
         :param input_name: Name of the input HTML file
         :return: True if the PDF was generated successfully, False otherwise
@@ -97,7 +98,7 @@ class FileHandler:
                     'marginLeft': 0,
                     'marginRight': 0,
                     'marginTop': 0,
-                    'marginBottom': .75 # Needs to be 1 for the PDF to not be cut off at the bottom
+                    'marginBottom': 0 # Needs a value if you don't want text to ignore margins to overflow to next page (disregard if resume is 1 page long)
                 })
                 output_path = str(self.output_dir / dir_name / output_name)
                 with open(output_path, "wb") as f:
@@ -121,3 +122,13 @@ class FileHandler:
             print(f"Page ScrollHeight: {scroll_height}px")
 
             await browser.close()
+
+    def sanitize_filename_and_directory(self, name: str) -> str:
+        """
+        Sanitizes a filename by removing invalid characters as well as newlines and carriage returns.
+    
+        :param name: The name to sanitize
+        :return: Sanitized name
+        """
+        name = name.replace('\n', ' ').replace('\r', '') 
+        return re.sub(r'[<>:"/\\|?*]', '', name)
