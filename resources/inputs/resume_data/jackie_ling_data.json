@@ -56,7 +56,7 @@
                 "Used Selenium for end to end testing",
                 "Optimized dashboard table components performances, improving load times by an estimated 15%",
                 "Worked in an Agile team that tracked project tasks and bugs using Jira",
-                "Worked on a job tracking webapp for client's service technicians",
+                "Worked on a job tracking web application for client's service technicians",
                 "Worked on a employee management webapp. The dashboard tracked the technicians",
                 "Wrote and improved internal documentation including onboading docs, reducing onboarding time by approximately 20%"
                 ]
@@ -68,11 +68,11 @@
                 "end": "Dec 2021",
                 "location": "Remote, NY",
                 "responsibilities": [
-                "Worked on an mobile app for scheduling appointments with Barbers, Hairstylists, Cosmetologists, and etc",
+                "Contributed to a mvp mobile app for scheduling appointments with Barbers, Hairstylists, Cosmetologists, and etc",
                 "Tech stack for the app was React Native, Django, and PostgreSQL",
                 "Worked in an Agile team where I participated in sprint planning and daily stand-ups on the Trello scrum board",
-                "The app was hosted on AWS which gave me exposure to EC2 and S3",
-                "Worked on backend api to uplaod and store profile pics to AWS S3 buckets",
+                "The app was hosted on AWS EC2 instance",
+                "Worked on backend api to upload and store profile pics to AWS S3 buckets",
                 "Helped incorporate Stripe API to add secure payment processing",
                 "Used Git version control to manage codebase changes and maintain a clean and organized repository",
                 "Used Postman to design, test, and document RESTful API endpoints",

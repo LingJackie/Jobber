@@ -1,4 +1,9 @@
 {
+    "jobvite.com": {
+      "job_title": ["h2.jv-header"],
+      "job_loc":   ["p.jv-job-detail-meta span"],
+      "job_desc":  ["div.jv-job-detail-description"]
+    },
     "myworkdayjobs.com": {
       "job_title": ["h2[data-automation-id='jobPostingHeader']"],
       "job_loc":   ["div[data-automation-id='locations']"],
@@ -26,23 +31,26 @@
     },
     "default": {
       "job_title": [
-        "h1.job-title",
+        "div.job__title",
+        "h1[class*='job'][class*='title']",
+        "div[class*='job'][class*='title'] h1",
         "h1.title",
         "h1.hero-heading",
-        "h1[class*='Title']",
         "h1 span[data-careersite-propertyid='title']",
-        "div.job__title"
+        "div[class*='job'][class*='title']",
+        "h1"
 
       ],
       "job_loc":   [
-        "div.job-location",
-        "p.job-location"
+        "div.[class*='location']",
+        "p.[class*='location']"
       ],
       "job_desc":  [
         "div.job-description",
+        "div[id='job-description']",
         "div[class*='job'][class*='details'][class*='row2']",
         "span[class*='job'][class*='description']",
-        "span[class~='jobdescription']",
+        "span[class*='description']",
         "div.top-content",
         "article.cms-content"
       ]

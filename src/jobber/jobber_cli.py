@@ -28,7 +28,7 @@ class JobberCLI:
     async def run(self):
         args = self.parser.parse_args()
         await self.setup()
-        await self.r_tailor.generate_tailored_resume(args.url)
+        await self.r_tailor.generate_tailored_resume_async(args.url)
 
 
         

@@ -10,25 +10,36 @@ from file_handler import FileHandler
 # api_key = os.getenv("GEMINI_API_KEY")
 logger = logging.getLogger(__name__)
 
+"TODO: Account for iframes in job postings"
 
 patterns = [
         r"At\s+([A-Z][\w\s&\-]+?)(?:,|\s|$)",
         r"Join the team at ([A-Z][\w&\-\s]+?)\b",
-        r"([A-Z][\w&\-\s]+?) is a (?:leading|fast-growing|well-known|top-tier|global)",
-        r"([A-Z][\w&\-\s]+?) is an equal opportunity employer"
-        # r"([A-Z][\w&\-\s]+?) is looking for",
+        r"([A-Z][\w&\-\s]+?) is a (?:leading|fast-growing|well-known|top-tier|global|premier|renowned|innovative|dynamic|reputable|established|trusted)",
+        r"([A-Z][\w&\-\s]+?) is an equal opportunity employer",
+        r"([A-Z][\w&\-\s]+?) is looking for",
     ]
 
 class JobPostScraper:
+    """
+    Used to scrapes job postings from various job sites using Playwright
+    """
     def __init__(self):
         self.job_title = "n-a"
         self.job_location = "n-a"
         self.job_salary = "n-a"
         self.job_description = "n-a"
         self.company_name = "n-a"
-
-        self.f_handler = FileHandler()
-        self.job_app_selector_dict = self.f_handler.load_job_app_selectors() # loads json containing a repository of site element selectors
+        
+    @classmethod
+    async def fetch_configs(cls):
+        """
+        Fetches the job app selectors from the file handler and initializes the JobPostScraper instance
+        """
+        instance = cls()
+        instance.f_handler = FileHandler()
+        instance.job_app_selector_dict = await instance.f_handler.load_job_app_selectors_async() # loads json containing a repository of site element selectors
+        return instance
 
     async def _extract_job_data(self, page: Page, selector_list: list) -> str:
         """
@@ -40,16 +51,22 @@ class JobPostScraper:
         """ 
         for selector in selector_list:
             try:
+                html = await page.content()
+                logger.debug(f"🔍 DOM snapshot: {html}")
+
                 el = page.locator(selector).first
                 text = await el.text_content(timeout=1500)
                 if text and text.strip():
                     text = text.replace('\n', ' ').replace('\r', '') 
+                    logger.debug(f"Selector: {selector} yielded text: {self._limit_string_with_ellipsis(text)}")
                     return text.strip()
             except Exception as e:
                 logger.debug(f"Selector failed: {selector} → {e}")
-        logger.warning(f"No selectors yielded results from list: {selector_list}")
+        logger.warning(f"No selectors yielded results")
         return "n-a"
-
+    
+    def _limit_string_with_ellipsis(self, s: str, max_length: int = 20) -> str:
+        return s if len(s) <= max_length else s[:max_length - 3] + "..."
     
     def _get_domain_key(self, url: str) -> str:
         """
@@ -65,7 +82,7 @@ class JobPostScraper:
     
     def _extract_company_name(self, text: str) -> str:
         """
-        Tries to extract the companie's name from the job description
+        Tries to extract the company's name from the job description
 
         :param text: job description
         :return: company's name
@@ -76,7 +93,7 @@ class JobPostScraper:
                 return match.group(1).strip()
         return "n-a"
     
-    async def scrape_job_posting(self, url: str, max_retries: int = 3, delay: float = 2.0) -> bool:
+    async def scrape_job_posting_async(self, url: str, max_retries: int = 3, delay: float = 2.0) -> bool:
         """
         Grabs job information from url and save it into class instance variables 
 
@@ -107,11 +124,12 @@ class JobPostScraper:
                         job_title_task, location_task, desc_task
                     )
 
-                    self.job_title = job_title
-                    self.job_location = job_location
-                    self.job_description = job_description
-                    self.company_name = self._extract_company_name(self.job_description)
-
+                    self.job_title          = job_title
+                    self.job_location       = job_location
+                    if job_description == "n-a":
+                        return False
+                    self.job_description    = job_description
+                    self.company_name       = self._extract_company_name(self.job_description)
                     return True
 
             except PlaywrightTimeoutError:
