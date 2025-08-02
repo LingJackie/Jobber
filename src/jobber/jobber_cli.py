@@ -16,7 +16,7 @@ class JobberCLI:
     async def setup(self):
         self.f_handler = FileHandler()
         resume_data = self.f_handler.load_resume_data("jackie_ling_data.json")
-        resume_template = self.f_handler.load_resume_template("default_resume_template.html")
+        resume_template = self.f_handler.load_resume_template("default_template.html")
         self.r_tailor = ResumeTailor(resume_data, resume_template)
 
 

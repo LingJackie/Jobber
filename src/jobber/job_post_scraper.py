@@ -40,30 +40,79 @@ class JobPostScraper:
         instance.f_handler = FileHandler()
         instance.job_app_selector_dict = await instance.f_handler.load_job_app_selectors_async() # loads json containing a repository of site element selectors
         return instance
-
+    
     async def _extract_job_data(self, page: Page, selector_list: list) -> str:
-        """
-        Grabs innerHTML of page based on selectors
+        contexts = [page]
+        frame_elements = await page.locator("iframe").all()
 
-        :param page: playwright page
-        :param selector_list: list of possible selectors for an element
-        :return: innerHTML in the form of a string
-        """ 
-        for selector in selector_list:
+        for frame_el in frame_elements:
             try:
-                html = await page.content()
-                logger.debug(f"🔍 DOM snapshot: {html}")
-
-                el = page.locator(selector).first
-                text = await el.text_content(timeout=1500)
-                if text and text.strip():
-                    text = text.replace('\n', ' ').replace('\r', '') 
-                    logger.debug(f"Selector: {selector} yielded text: {self._limit_string_with_ellipsis(text)}")
-                    return text.strip()
+                content_frame = await frame_el.content_frame()
+                if content_frame:
+                    contexts.append(content_frame)
             except Exception as e:
-                logger.debug(f"Selector failed: {selector} → {e}")
-        logger.warning(f"No selectors yielded results")
+                logger.debug(f"⚠️ Could not get content frame: {e}")
+
+        async def try_selectors_in_context(context):
+            for selector in selector_list:
+                try:
+                    el = context.locator(selector).first
+                    await el.wait_for(timeout=3000)
+                    text = await el.text_content()
+                    if text and text.strip():
+                        text = text.replace('\n', ' ').replace('\r', '')
+                        logger.debug(f"Selector: {selector} matched in {'iframe' if context != page else 'main page'} → {self._limit_string_with_ellipsis(text)}")
+                        return text.strip()
+                except Exception as e:
+                    logger.debug(f"Selector failed in {'iframe' if context != page else 'main page'}: {selector} → {e}")
+            return None
+
+        results = await asyncio.gather(*[try_selectors_in_context(ctx) for ctx in contexts])
+        for result in results:
+            if result:
+                return result
+
+        logger.warning("No selectors yielded results (including iframes)")
         return "n-a"
+
+    # async def _extract_job_data(self, page: Page, selector_list: list) -> str:
+    #     """
+    #     Tries selectors on the main page and then inside any iframe, returning first valid text match.
+
+    #     :param page: playwright page
+    #     :param selector_list: list of possible selectors for an element
+    #     :return: innerHTML in the form of a string
+    #     """
+    #     contexts = [page]
+
+    #     # Try adding iframe content frames if any
+    #     frame_elements = await page.locator("iframe").all()
+    #     for frame_el in frame_elements:
+    #         try:
+    #             content_frame = await frame_el.content_frame()
+    #             if content_frame:
+    #                 contexts.append(content_frame)
+    #         except Exception as e:
+    #             logger.debug(f"⚠️ Could not get content frame: {e}")
+
+    #     for context in contexts:
+    #         for selector in selector_list:
+    #             try:
+    #                 html = await context.content()
+    #                 logger.debug(f"🔍 DOM snapshot for selector '{selector}': {html[:300]}...")
+
+    #                 el = context.locator(selector).first
+    #                 await el.wait_for(timeout=3000)
+    #                 text = await el.text_content()
+    #                 if text and text.strip():
+    #                     text = text.replace('\n', ' ').replace('\r', '')
+    #                     logger.debug(f"Selector: {selector} matched in {'iframe' if context != page else 'main page'} → {self._limit_string_with_ellipsis(text)}")
+    #                     return text.strip()
+    #             except Exception as e:
+    #                 logger.debug(f"Selector failed in {'iframe' if context != page else 'main page'}: {selector} → {e}")
+
+    #     logger.warning(f"No selectors yielded results (including iframes)")
+    #     return "n-a"
     
     def _limit_string_with_ellipsis(self, s: str, max_length: int = 20) -> str:
         return s if len(s) <= max_length else s[:max_length - 3] + "..."
@@ -106,7 +155,7 @@ class JobPostScraper:
             browser = None
             try:
                 async with async_playwright() as p:
-                    browser = await p.chromium.launch(headless=True)
+                    browser = await p.chromium.launch(headless=False)
                     page = await browser.new_page()
                     await page.goto(url, timeout=10000)
 

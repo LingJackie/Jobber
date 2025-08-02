@@ -6,6 +6,7 @@ from pathlib import Path
 from bs4 import BeautifulSoup
 from playwright.async_api import async_playwright
 import aiofiles
+from datetime import datetime
 import os
 
 logger = logging.getLogger(__name__)
@@ -53,8 +54,12 @@ class FileHandler:
         """Loads hotkey mappings from config"""
         return await self.load_json_async(str(self.base_dir / 'configs' / 'hotkeys_config.json'))
 
-    
     async def load_resume_template_async(self, file_name: str) -> BeautifulSoup:
+        """ 
+        Loads a resume template from an HTML file
+        :param file_name: Name of the HTML file to load
+        :return: BeautifulSoup object containing the parsed HTML
+        """
         try:
             template_path = str(self.base_dir / 'resources' / 'inputs' / 'templates' / file_name)
             async with aiofiles.open(template_path, "r", encoding="utf-8") as f:
@@ -63,7 +68,7 @@ class FileHandler:
         except Exception as e:
             logger.error("Could not load template: %s", e)
             return BeautifulSoup("", "html.parser")
-        
+    
     async def save_html_async(self, parsed_html: BeautifulSoup, output_path: str = None) -> bool:
         """
         Saves a BeautifulSoup object as an HTML file
@@ -107,7 +112,7 @@ class FileHandler:
                     'marginLeft': 0,
                     'marginRight': 0,
                     'marginTop': 0,
-                    'marginBottom': 0 # Adjust >0 to add margins and prevent text overflow on pdf
+                    'marginBottom': 0 # Adjust >0 to add margins and prevent text overflow on pdf (If resume is a page long then ignore this)
                 })
                 output_path = str(self.output_dir / dir_name / output_name)
                 async with aiofiles.open(output_path, "wb") as f:
@@ -130,7 +135,25 @@ class FileHandler:
 
             await browser.close()
 
-    def sanitize_filename_and_directory(self, name: str) -> str:
+    
+    
+    def get_google_sheet_credentials(self):
+        """
+        Loads Google Sheets API credentials from a JSON file.
+        :return: Credentials object
+        """
+        return str(self.base_dir / 'configs' / 'credentials.json')
+    
+
+    # [Output Directory Management]
+    async def load_recent_output_dir_async(self) -> str:
+        """
+        Loads the most recent output directory from a JSON file
+        :return: The most recent output directory name as a string
+        """
+        return await self.load_json_async(str(self.base_dir / 'configs' / 'recent.json'))
+    
+    def _sanitize_file_and_directory_name(self, name: str) -> str:
         """
         Sanitizes a filename by removing invalid characters as well as newlines and carriage returns.
     
@@ -139,3 +162,63 @@ class FileHandler:
         """
         name = name.replace('\n', ' ').replace('\r', ' ')
         return re.sub(r'[<>:"/\\|?*]', '', name)
+    
+    def _parse_timestamp(dir_name: str) -> datetime:
+        """
+        Extract datetime from dir name with format: yyyy-mmm-dd_hh-mm_name
+        :param dir_name: Directory name to parse
+        :return: Parsed datetime object or datetime.min if parsing fails
+        """
+        try:
+            base = dir_name.split("_")[0:2]  # ['yyyy-mmm-dd', 'hh-mm']
+            timestamp_str = "_".join(base)
+            return datetime.strptime(timestamp_str, "%Y-%b-%d_%H-%M")
+        except Exception:
+            return datetime.min  # fallback if parsing fails
+        
+    def _slugify(self, text: str) -> str:
+        """
+        Converts a string into a slug format (lowercase, spaces replaced with dashes. E.g., "Software Engineer" -> "software-engineer").
+        This is useful for creating directory names or file names that are URL-friendly
+        :param text: input string
+        :return: slugified string
+        """ 
+        if not text:
+            return "n-a"
+        return text.lower().replace(" ", "-").replace("_", "-")
+    
+    def _get_timestamp(self) -> str:
+        """
+        Returns the current timestamp in the format YYYY-MM-DD_HH-MM 
+        Example: 2025-07-13_04-34
+        """
+        return datetime.now().strftime("%Y-%m-%d_%H-%M")
+    
+    def get_output_dir_name(self, company_name: str = "n-a", job_title: str = "n-a") -> str:
+        """
+        Create a new directory name with the format timestamp_companyname_title
+        :param company_name: Name of the company
+        :param job_title: Job title for the position
+        :return: Formatted directory name (e.g., "2025-07-13_04-34_company-name_job-title")
+        """ 
+        formatted_company_name = self._sanitize_file_and_directory_name(company_name)
+        formatted_company_name = self._slugify(formatted_company_name)
+        formatted_job_title =    self._sanitize_file_and_directory_name(job_title)
+        formatted_job_title =    self._slugify(formatted_job_title)
+        return f"{self._get_timestamp()}_{formatted_company_name}_{formatted_job_title}"
+    
+    async def write_resume_to_html_async(self, parsed_template: BeautifulSoup, dir_name: str) -> bool :
+        """
+        Converts BeautifulSoup object into an html file and places its own directory based on the job posting and timestamp
+        :param parsed_template: BeautifulSoup object containing the parsed HTML template
+        :param dir_name: Directory name where the HTML file will be saved
+        :return: True if the HTML file was saved successfully, False otherwise
+        """ 
+        output_dir = self.output_dir / dir_name
+        output_dir.mkdir(parents=True, exist_ok=True)
+        file_name = "resume_wip.html"
+        return await self.save_html_async(parsed_template, str(output_dir / file_name)) 
+    
+
+
+        

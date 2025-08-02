@@ -1,4 +1,5 @@
 {
   "ctrl+/": "on_tailor_resume_hotkey",
-  "ctrl+shift+.": "on_save_pdf_hotkey"
+  "ctrl+shift+.": "on_save_pdf_hotkey",
+  "ctrl+alt+x": "on_alternative_tailor_resume_hotkey"
 }

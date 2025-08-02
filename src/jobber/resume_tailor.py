@@ -3,7 +3,6 @@ import json
 import asyncio
 from google import genai
 from bs4 import BeautifulSoup
-from pathlib import Path
 from datetime import datetime
 from job_post_scraper import JobPostScraper
 from file_handler import FileHandler
@@ -17,6 +16,7 @@ logger = logging.getLogger(__name__)
 
 
 # TODO make use of gemini cache so I dont have to keep sending the resume
+# TODO Fix bug where it would write multiple times to the same file so there would be duplicate entries
 class ResumeTailor:
     """
     ResumeTailor is responsible for tailoring a resume to a specific job posting by leveraging an LLM to rewrite work experience and skills,
@@ -86,13 +86,14 @@ class ResumeTailor:
         self.resume["data"]["skills"]["coding_languages"] = skills.get("coding_languages", [])
         return True
     
-    async def _get_tailored_work_exp_async(self, job_desc: str, num_bullets: int = 4, max_retries: int = 3, delay: float = 2.0) -> dict | None:
+    async def _get_tailored_work_exp_async(self, job_desc: str, num_bullets: int = 12, max_retries: int = 3, delay: float = 2.0) -> dict | None:
         """
         Makes LLM tailor resume job descriptions based on the job posting
 
         :param job_desc: job description from job posting
         :return: LLM response which should be in json format converted to dict
         """ 
+        num_skills = 5
         extracted_exp = {
             "work_experience": {
                 key: {
@@ -107,13 +108,14 @@ class ResumeTailor:
             }
         }
         prompt = (
-            "You are a resume optimization assistant. "
-            "I will give you a json containing my work experience and skills along with a job posting description. "
-            "Your job is to rewrite and select " + str(num_bullets) + " bullet points per role that are most relevant to the job description."
-            "Order them by importance and relevance to the job description. "
-            "You are allowed to combine bullets as well. "
-            "Choose at least 5 of the most relevant skills from the skills section. "
-            "Format the rewrite in pure json, the same schema as what I sent you. "
+            "You will receive a JSON payload containing my work experience, skills, and a job posting description. "
+            "Your task is to generate a revised version of my experience that is tailored to the job posting. "
+            "Select and rewrite a total of" + str(num_bullets) + " bullet points across my roles that are most relevant to the job description. "
+            "Each role should have at least 2 bullet point. "
+            "You may combine multiple bullets if doing so improves clarity or relevance. "
+            "If my work experience is from a different domain than the posting, try to emphasize transferable skills, or technical proficiencies."
+            "Select at least " + str(num_skills) + "of the most relevant skills from the skills section and incorporate them appropriately. "
+            "Format the rewrite in pure json, the same schema as the inputs. "
             "Do not include any markdown or explanations. Use double quotes. No periods. "
             "Here is my experience and the job app:\n" + json.dumps(extracted_exp) + "\n" + job_desc
         )
@@ -158,6 +160,10 @@ class ResumeTailor:
             return False
 
         try:
+            # for element in section.find_all(recursive=False):
+            #     if element.name != "h3" or element.name != "h2":  # Keep the section header
+            #         element.decompose()
+
             # Inject each experience as a complete block
             for exp in self.resume["data"]["work_experience"].values():
                 div = self.parsed_template.new_tag("div", **{"class": "experience"})
@@ -214,6 +220,10 @@ class ResumeTailor:
             logger.error("Could not find 'technical_skills' section in the template.")
             return False
         try:
+            # for element in section.find_all(recursive=False):
+            #     if element.name != "h3" or element.name != "h2":  # Keep the section header
+            #         element.decompose()
+
             table = self.parsed_template.new_tag("table")
             tbody = self.parsed_template.new_tag("tbody")
             section.append(table)
@@ -235,47 +245,6 @@ class ResumeTailor:
             logger.exception("Error occurred while updating skills section: %s", e)
             return False
                
-                
-
-    async def _write_resume_to_html_async(self) -> bool :
-        """
-        Converts BeautifulSoup object into an html file and places its own directory based on the job posting and timestamp
-        """ 
-        output_dir = self.f_handler.output_dir / self._get_output_dir_name() 
-        output_dir.mkdir(parents=True, exist_ok=True)
-        file_name = "resume_wip.html"
-        return await self.f_handler.save_html_async(self.parsed_template, str(output_dir / file_name)) 
-        
-    def _slugify(self, text: str) -> str:
-        """
-        Converts a string into a slug format (lowercase, spaces replaced with dashes)
-
-        :param text: input string
-        :return: slugified string
-        """ 
-        if not text:
-            return "n-a"
-        return text.lower().replace(" ", "-").replace("_", "-")
-    
-    def _get_timestamp(self) -> str:
-        """
-        Returns the current timestamp in the format YYYY-MM-DD_HH-MM 
-        Example: 2025-07-13_04-34
-        """
-        return datetime.now().strftime("%Y-%m-%d_%H-%M")
-    
-    def _get_output_dir_name(self) -> str:
-        """
-        Create a new directory name based on timestamp_companyname_title
-        Should look something like this: '2025-07-13_04-34_Spotlist-Inc_Software-Engineer_v1'
-                                        
-        """ 
-        new_company_name = self.f_handler.sanitize_filename_and_directory(self.scraper.company_name)
-        
-        
-        new_company_name = self._slugify(self.scraper.company_name)
-        new_job_title = self._slugify(self.scraper.job_title)
-        return f"{self._get_timestamp()}_{new_company_name}_{new_job_title}_v1"
 
     def _generate_resume_pdf_name(self) -> str:
         """
@@ -291,7 +260,7 @@ class ResumeTailor:
             name = " ".join(word.capitalize() for word in name.split())
         # Replace spaces with underscores
         name = name.replace(" ", "_")
-        name = self.f_handler.sanitize_filename_and_directory(name)
+        name = self.f_handler._sanitize_file_and_directory_name(name)
         return f"{name}_Resume.pdf"
     
     async def generate_tailored_resume_async(self, url: str) -> bool:
@@ -316,59 +285,38 @@ class ResumeTailor:
         if not self._update_resume_skills():
             logger.error("Failed to update skills section in the template")
             return False
-        if not await self._write_resume_to_html_async():
+        self.most_recent_output_dir = self.f_handler.get_output_dir_name() # Keeps track of the most recent output directory if we need to edit and re-save the pdf
+        if not await self.f_handler.write_resume_to_html_async(self.parsed_template, self.most_recent_output_dir):
             logger.error("Failed to write resume to HTML")
             return False
-        self.most_recent_output_dir = self._get_output_dir_name() # Keeps track of the most recent output directory if we need to edit and re-save the pdf
+        await self.f_handler.generate_pdf_async(
+            dir_name=self.most_recent_output_dir,
+            output_name=self.resume_pdf_file_name
+        )
+        return True
+    
+    async def alternative_generate_tailored_resume_async(self, job_description: str) -> bool:
+        """
+        Similar to generate_tailored_resume_async, but takes the job description as a parameter instead of scraping it from the URL
+        This is used if the scraper is unable to scrape the job posting
+        """ 
+        tailored = await self._get_tailored_work_exp_async(job_description)
+        if not self._update_work_exp(tailored):
+            logger.error("Failed to update work experience with tailored data")
+            return False
+        if not self._update_resume_work_exp():
+            logger.error("Failed to update work experience section in the template")
+            return False
+        if not self._update_resume_skills():
+            logger.error("Failed to update skills section in the template")
+            return False
+        self.most_recent_output_dir = self.f_handler.get_output_dir_name() # Keeps track of the most recent output directory if we need to edit and re-save the pdf
+        if not await self.f_handler.write_resume_to_html_async(self.parsed_template, self.most_recent_output_dir):
+            logger.error("Failed to write resume to HTML")
+            return False
         await self.f_handler.generate_pdf_async(
             dir_name=self.most_recent_output_dir,
             output_name=self.resume_pdf_file_name
         )
         return True
 
-    # def infer_schema_from_example(self) -> dict:
-    #     def get_type(val):
-    #         if isinstance(val, str):
-    #             return "string"
-    #         elif isinstance(val, int):
-    #             return "integer"
-    #         elif isinstance(val, float):
-    #             return "number"
-    #         elif isinstance(val, bool):
-    #             return "boolean"
-    #         elif isinstance(val, list):
-    #             return {
-    #                 "type": "array",
-    #                 "items": get_type(val[0]) if val else {}
-    #             }
-    #         elif isinstance(val, dict):
-    #             return {
-    #                 "type": "object",
-    #                 "properties": {
-    #                     k: get_type(v) for k, v in val.items()
-    #                 }
-    #             }
-    #         else:
-    #             return {}
-
-    #     return {
-    #         "type": "object",
-    #         "properties": {
-    #             key: get_type(value) for key, value in self.resume.items()
-    #         },
-    #         "required": list(self.resume.keys())
-    #     }
-
-    
-    # def extract_json_block(self, text: str):
-    #     """
-    #     LLM response should be in the form of a json for easier parsing
-
-    #     :param text: LLM text output
-    #     :return: domain and extension string (Example: "myworkdayjobs.com")
-    #     """ 
-    #     start = text.find('{')
-    #     end = text.rfind('}')
-    #     result = text[start:end+1] if start != -1 and end != -1 else None
-
-    

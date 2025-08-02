@@ -2,6 +2,9 @@ import keyboard
 import pyperclip
 import asyncio
 import time
+import pygetwindow as gw
+import pyautogui
+
 import threading
 from resume_tailor import ResumeTailor
 from file_handler import FileHandler
@@ -16,11 +19,13 @@ class HotkeyListener:
         self.loop = asyncio.get_event_loop()
         self.f_handler = FileHandler()
 
+        self.prev_clipboard_content = None
+
     @classmethod
     async def create(cls):
         instance = cls()
         jackie_resume = await instance.f_handler.load_resume_data_async("jackie_ling_data.json")
-        resume_template = await instance.f_handler.load_resume_template_async("default_resume_template.html")
+        resume_template = await instance.f_handler.load_resume_template_async("default_template.html")
         instance.rt = await ResumeTailor.set_scraper(jackie_resume, resume_template)
 
         hotkey_map = await instance.f_handler.load_hotkey_config_async()
@@ -40,16 +45,28 @@ class HotkeyListener:
         while self.running:
             await asyncio.sleep(0.1)
 
-
     def stop(self):
         print("Stopping listener.")
         self.running = False
         keyboard.unhook_all_hotkeys()
 
-    def on_tailor_resume_hotkey(self):
+    def getClipboardContent(self):
+        keyboard.release('ctrl')
+        keyboard.release('alt')
         keyboard.send('ctrl+c')
         time.sleep(0.1)  # Slight delay to let clipboard catch up
         clipboard_content = pyperclip.paste()
+        if self.prev_clipboard_content != clipboard_content:
+            self.prev_clipboard_content = clipboard_content
+            return clipboard_content
+        else:
+            print("Clipboard content has not changed, skipping...")
+            return None
+
+    def on_tailor_resume_hotkey(self):
+        clipboard_content = self.getClipboardContent()
+        if(clipboard_content is None):
+            return
         print("Tailoring resume for: ", clipboard_content)
         if self.rt:
             asyncio.run_coroutine_threadsafe(
@@ -58,7 +75,18 @@ class HotkeyListener:
             )
         else:
             print("ResumeTailor not initialized.")
-
+    def on_alternative_tailor_resume_hotkey(self):
+       
+        clipboard_content = self.getClipboardContent()
+        
+        print("Tailoring resume for: ", pyperclip.paste())
+        if self.rt:
+            asyncio.run_coroutine_threadsafe(
+                self.rt.alternative_generate_tailored_resume_async(clipboard_content),
+                self.loop
+            )
+        else:
+            print("ResumeTailor not initialized.")
     def on_save_pdf_hotkey(self):
         print("Saving PDF...")
         if self.rt:

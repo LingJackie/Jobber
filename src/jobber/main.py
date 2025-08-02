@@ -11,7 +11,7 @@ import keyboard
 async def main():
     f_handler = FileHandler()
     jackie_resume = await f_handler.load_resume_data_async("jackie_ling_data.json")
-    resume_template = await f_handler.load_resume_template_async("default_resume_template.html")
+    resume_template = await f_handler.load_resume_template_async("default_template.html")
     
     rw = await ResumeTailor.set_scraper(jackie_resume, resume_template)
     await rw.generate_tailored_resume_async(r"https://www.oneforma.com/jobs/agate-photo-style-editor/")
@@ -23,7 +23,7 @@ async def main():
 
 async def test_scraper():
     scraper = await JobPostScraper.fetch_configs()
-    await scraper.scrape_job_posting_async(r"https://jobs.jobvite.com/careers/webmd/job/onYtwfw4?__jvst=Career%20Site")    
+    await scraper.scrape_job_posting_async(r"https://www.linkedin.com/jobs/search/?currentJobId=4268918032&distance=25.0&f_TPR=r86400&geoId=101651951&keywords=junior&origin=JOB_SEARCH_PAGE_JOB_FILTER")    
     print("Title: ", scraper.job_title)
     print("Location: ", scraper.job_location)
     # print(scraper.job_salary)
@@ -35,16 +35,16 @@ async def save_new_pdf():
     await f_handler.generate_pdf_async("2025-07-17_03-19_n-a_associate-applied-technology-developer_v1", "Jackie_Ling_Resume.pdf", "resume_wip.html")
     
 
-# asyncio.run(main())
+asyncio.run(main())
 # asyncio.run(test_scraper())
 # asyncio.run(save_new_pdf())
 
-async def hm():
-    listener = await HotkeyListener.create()
-    try:
-        await listener.listen()
-    except KeyboardInterrupt:
-        print("👋 Interrupted by user.")
-        listener.stop()
+# async def hm():
+#     listener = await HotkeyListener.create()
+#     try:
+#         await listener.listen()
+#     except KeyboardInterrupt:
+#         print("👋 Interrupted by user.")
+#         listener.stop()
 
-asyncio.run(hm())
+# asyncio.run(hm())

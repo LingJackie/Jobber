@@ -9,6 +9,12 @@
       "job_loc":   ["div[data-automation-id='locations']"],
       "job_desc":  ["div[data-automation-id='jobPostingDescription']"]
     },
+    "linkedin.com": {
+      "job_title": ["a[class*='ember'][class*='view']","h1.top-card-layout__title"],
+      "job_loc":   [""],
+      "job_desc":  ["div[class*='mt4']"],
+      "company_name": [ "div[class*='company'][class*='name']"]
+    },
     "oraclecloud.com": {
       "job_title": [""],
       "job_loc":   [""],
@@ -21,13 +27,18 @@
     },
     "adp.com": {
       "job_title": ["h2.job-description-title", "h1.hero-heading"],
-      "job_loc":   [""],
-      "job_desc":  [""]
+      "job_loc":   ["label.job-description-location-item"],
+      "job_desc":  ["div.job-description-data"]
     },
     "greenhouse.io": {
       "job_title": ["div.section-header.section-header--large.font-primary", "h1.section-header.section-header--large.font-primary"],
       "job_loc":   ["div.job__location"],
       "job_desc":  ["div[class*='job'][class*='description']"]
+    },
+    "nyc.gov": {
+      "job_title": ["h1[class*='header']"],
+      "job_loc":   ["div.job-location"],
+      "job_desc":  ["div.[aria-label='Job description']"]
     },
     "default": {
       "job_title": [
@@ -36,23 +47,29 @@
         "div[class*='job'][class*='title'] h1",
         "h1.title",
         "h1.hero-heading",
+        "h1[class*='header']",
+        "h2[class*='header']",
         "h1 span[data-careersite-propertyid='title']",
         "div[class*='job'][class*='title']",
+    
+        "section[class*='job'][class*='description'] h1",
         "h1"
-
       ],
       "job_loc":   [
         "div.[class*='location']",
         "p.[class*='location']"
       ],
       "job_desc":  [
-        "div.job-description",
+        "div[class*='job'][class*='description']",
         "div[id='job-description']",
         "div[class*='job'][class*='details'][class*='row2']",
+        "div[class*='description']",
+        "div[class*='body']",
         "span[class*='job'][class*='description']",
         "span[class*='description']",
         "div.top-content",
         "article.cms-content"
+        
       ]
     }
 }

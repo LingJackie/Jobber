@@ -54,11 +54,12 @@
                 "Worked with senior developers to troubleshoot technical issues",
                 "Wrote automated unit and integration tests using Jest",
                 "Used Selenium for end to end testing",
-                "Optimized dashboard table components performances, improving load times by an estimated 15%",
+                "Optimized dashboard table components performances, improving load times by an estimated 10%",
                 "Worked in an Agile team that tracked project tasks and bugs using Jira",
-                "Worked on a job tracking web application for client's service technicians",
-                "Worked on a employee management webapp. The dashboard tracked the technicians",
-                "Wrote and improved internal documentation including onboading docs, reducing onboarding time by approximately 20%"
+                "Worked on an job tracking web application for client's service technicians and their operational needs",
+                "Worked on an employee management webapp. The dashboard tracked the technicians",
+                "Wrote and improved internal documentation including onboading docs, reducing onboarding time by approximately 20%",
+                "Implemented OAuth 2.0 flows with token-based authentication for secure access to REST API endpoints"
                 ]
             },
             "experience_1":{
@@ -75,7 +76,7 @@
                 "Worked on backend api to upload and store profile pics to AWS S3 buckets",
                 "Helped incorporate Stripe API to add secure payment processing",
                 "Used Git version control to manage codebase changes and maintain a clean and organized repository",
-                "Used Postman to design, test, and document RESTful API endpoints",
+                "Used Postman to test, and document RESTful API endpoints",
                 "Used Django ORM to retreive data from relational databases",
                 "Helped with writing documentation",
                 "Attended weekly meeetings with developers and non technical stakeholders to discuss progress",
